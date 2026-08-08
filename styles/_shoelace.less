@@ -1,0 +1,74 @@
+/**
+ * Aurora skin — Shoelace web-component theme bridge
+ *
+ * Aurora self-hosts a minimal Shoelace bundle (deps/shoelace/aurora-shoelace.min.js)
+ * containing only the components it progressively enhances. Rather than ship
+ * Shoelace's full ~38 KB theme, this maps the exact `--sl-*` tokens those
+ * components consume onto Aurora's own design tokens, so web components match
+ * the skin automatically in light and dark.
+ *
+ * Custom properties pierce shadow DOM, so defining them on :root themes every
+ * Shoelace element. Keep this list in sync with the tokens referenced by the
+ * bundled components (see skins/aurora/src/webcomponents.js).
+ */
+
+:root {
+    // Brand / state
+    --sl-color-primary-600: var(--aurora-accent);   // checked track
+    --sl-color-neutral-0:   #ffffff;                // knob (stays light for contrast)
+    --sl-color-neutral-400: #d2cfe2;                // unchecked track (violet-biased)
+
+    // Focus
+    --sl-focus-ring:        var(--aurora-ring);
+    --sl-focus-ring-offset: 2px;
+
+    // Typography (labels / help text)
+    --sl-input-font-family:  var(--aurora-font-sans);
+    --sl-input-font-weight:  var(--aurora-weight-normal);
+    --sl-input-border-width: 1px;
+
+    --sl-input-font-size-small:  12px;
+    --sl-input-font-size-medium: 14px;
+    --sl-input-font-size-large:  16px;
+
+    --sl-input-label-color:            var(--aurora-ink);
+    --sl-input-label-font-size-small:  12px;
+    --sl-input-label-font-size-medium: 14px;
+    --sl-input-label-font-size-large:  16px;
+
+    --sl-input-help-text-color:            var(--aurora-muted);
+    --sl-input-help-text-font-size-small:  11px;
+    --sl-input-help-text-font-size-medium: 12px;
+    --sl-input-help-text-font-size-large:  14px;
+
+    --sl-input-required-content:        "*";
+    --sl-input-required-content-color:  var(--aurora-error);
+    --sl-input-required-content-offset: -2px;
+
+    // Sizing / spacing / motion
+    --sl-toggle-size-small:  14px;
+    --sl-toggle-size-medium: 18px;
+    --sl-toggle-size-large:  22px;
+    --sl-spacing-3x-small:   0.125rem;
+    --sl-spacing-2x-small:   0.25rem;
+    --sl-transition-fast:    var(--aurora-dur-fast);
+}
+
+// Dark-mode retuning (thumb stays light for contrast on the accent/dark track)
+html.dark-mode {
+    --sl-color-neutral-400: #514e6e;   // violet-biased, matched to the old luminance
+}
+
+// A native checkbox that Aurora has upgraded to <sl-switch> is hidden but kept
+// in the DOM so form submission and ui.js handlers keep working.
+.aurora-enhanced-checkbox {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}

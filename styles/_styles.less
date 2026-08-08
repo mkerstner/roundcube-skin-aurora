@@ -1,0 +1,149 @@
+/**
+ * Aurora skin — component refinements
+ *
+ * This layer is imported last, so it can safely add on top of Elastic. It
+ * introduces the runtime design-token bridge (CSS custom properties), a
+ * system-font UI, softer radii, layered elevation and an accessible focus
+ * ring. Colour values are pulled from the LESS tokens so light/dark stay in
+ * sync automatically.
+ */
+
+// ---------------------------------------------------------------------------
+// Design-token system — the single source of truth (CSS custom properties)
+// ---------------------------------------------------------------------------
+@import "_system.less";
+
+// ---------------------------------------------------------------------------
+// Typography — modern system UI stack + type scale
+// ---------------------------------------------------------------------------
+// Redefine Elastic's `.font-family` mixin so every call site inherits the
+// system stack (LESS resolves all matching mixin definitions in scope; this
+// later definition wins). It now points at the --aurora-font-sans token.
+.font-family {
+    font-family: var(--aurora-font-sans);
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+    .font-family();
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+// Apply the modular type scale to headings and common title elements.
+// Kept additive and low-specificity so Elastic's per-view sizing still wins
+// where it sets an explicit value.
+h1 { font-size: var(--aurora-text-2xl); line-height: var(--aurora-leading-tight); }
+h2 { font-size: var(--aurora-text-xl);  line-height: var(--aurora-leading-tight); }
+h3 { font-size: var(--aurora-text-lg);  line-height: var(--aurora-leading-tight); }
+
+#message-header > .subject { font-size: var(--aurora-text-xl); }
+#contacthead .names span.namefield { font-size: var(--aurora-text-xl); }
+.header-title { font-weight: var(--aurora-weight-semibold); }
+
+// ---------------------------------------------------------------------------
+// Softer radii on interactive surfaces
+// ---------------------------------------------------------------------------
+.btn,
+button.btn {
+    border-radius: var(--aurora-radius-sm);
+    transition: background-color var(--aurora-transition),
+                box-shadow var(--aurora-transition),
+                border-color var(--aurora-transition);
+}
+
+.form-control,
+.custom-select,
+select.form-control,
+textarea.form-control,
+input.form-control {
+    border-radius: var(--aurora-radius-sm);
+    transition: border-color var(--aurora-transition),
+                box-shadow var(--aurora-transition);
+}
+
+// ---------------------------------------------------------------------------
+// Selected list row
+// ---------------------------------------------------------------------------
+// Which message is open should read on its own, not only from the background
+// tint. Elastic already reserves a 2px transparent gutter on the first cell of
+// every row for its focus indicator, so colouring it for the selected row costs
+// no layout shift and stays aligned to the row box — unlike an overlay ring.
+// (On touch layouts Elastic omits the gutter entirely, so this is a no-op there.)
+// The `html:not(.touch)` prefix is required, not decorative: Elastic's baseline
+// `html:not(.touch) .listing tbody tr > td:first-child { border-left: 2px solid
+// transparent }` scores (0,3,4), so the same selector without the prefix (0,3,3)
+// loses and the rule is silently inert. It also correctly scopes this to the
+// layouts where the gutter exists at all.
+html:not(.touch) {
+    // Selected row — persists whether or not the list itself has focus, so
+    // "which message is open" survives moving focus to the preview pane.
+    .listing tbody tr.selected > td:first-child,
+    .listing:not(.withselection) tbody tr.selected > td.selection + td,
+    .listing li.selected > a {
+        border-left-color: var(--aurora-list-indicator);
+    }
+
+    // Elastic's keyboard-focus bar, routed through the same token so it also
+    // lightens on the dark canvas. Matches Elastic's own selectors exactly and
+    // wins on order, being imported after it.
+    .listing.focus tbody tr.focused > td:first-child,
+    .listing.focus:not(.withselection) tbody tr.focused > td.selection + td,
+    .listing li > a:focus {
+        border-left-color: var(--aurora-list-indicator);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Layered elevation instead of hard borders on floating surfaces
+// ---------------------------------------------------------------------------
+.popover,
+.ui-dialog,
+.ui-menu {
+    border-radius: var(--aurora-radius);
+    box-shadow: var(--aurora-shadow-lg);
+}
+
+// ---------------------------------------------------------------------------
+// Density — controls consume the density tokens, so the comfortable default
+// and `html.aurora-density-compact` retune sizing from one place. min-height
+// is additive (a floor), so it never shrinks Elastic's larger controls.
+// ---------------------------------------------------------------------------
+.btn,
+button.btn,
+.form-control,
+.custom-select {
+    min-height: var(--aurora-control-height);
+}
+
+// ---------------------------------------------------------------------------
+// Motion hygiene
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Accessibility layer (focus, forced-colors, dark-mode link contrast)
+// ---------------------------------------------------------------------------
+@import "_a11y.less";
+
+// ---------------------------------------------------------------------------
+// Web components — Shoelace token bridge (Phase 5)
+// ---------------------------------------------------------------------------
+@import "_shoelace.less";
+
+// ---------------------------------------------------------------------------
+// Mobile-first layer (bottom tab bar, touch comfort, safe-area insets)
+// ---------------------------------------------------------------------------
+@import "_mobile.less";

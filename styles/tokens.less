@@ -1,0 +1,110 @@
+/**
+ * Aurora skin — design tokens (LESS layer)
+ *
+ * This file reseeds Elastic's LESS variables. Because the whole Elastic
+ * palette is derived from a handful of seed variables (see the parent skin's
+ * styles/colors.less), overriding those seeds here cascades a fresh look
+ * through every derived colour without touching Elastic's source.
+ *
+ * LESS variables are lazily evaluated (last definition in scope wins), and
+ * this file is imported AFTER Elastic's variables but BEFORE its rule sets,
+ * so every value below overrides the inherited default.
+ *
+ * The runtime-facing CSS custom properties live in _styles.less.
+ */
+
+// ---------------------------------------------------------------------------
+// Brand / accent
+// ---------------------------------------------------------------------------
+// Modern indigo-blue accent. Everything (buttons, badges, selection, focus
+// rings, datepicker, blockquotes, dark-mode accent) derives from this.
+@color-main:                #4c6ef5;
+@color-link:                #3b5bdb;   // slightly darker for AA text contrast on white
+
+// ---------------------------------------------------------------------------
+// Neutrals / ink
+// ---------------------------------------------------------------------------
+// Stage 1 of the "joyful" pass: the neutrals carry a slight violet bias toward
+// the accent instead of sitting on a blue-grey axis. Nothing here reads as
+// coloured on its own — the effect only shows up next to a true grey.
+//
+// @color-black seeds a chain in Elastic's colors.less, so this one value also
+// moves body text, column dividers and list separators:
+//   @color-font              lighten(@color-black, 10%)  #303745 -> #282456
+//   @color-layout-border     lighten(@color-black, 75%)  #dbdee6 -> #d9d7ee
+//   @color-list-border       lighten(@color-black, 85%)  #f9f9fb -> #fbfbfd
+// Body text on white improves 11.94 -> 14.22 (AAA).
+@color-black:               #171532;   // violet-biased ink (was #1b1f27)
+@color-border:              #e7e4f2;   // violet-biased hairline (was #e4e7ec)
+
+// Shadow hue. Elevation used to derive from @color-black; giving shadows their
+// own slightly deeper, more saturated violet is what makes surfaces read as lit
+// rather than just outlined. Consumed by the elevation tokens in _system.less.
+@color-shadow:              #1f184a;
+
+// ---------------------------------------------------------------------------
+// Semantic colours (modern, AA-friendly)
+// ---------------------------------------------------------------------------
+@color-error:               #d92d20;   // deepened for AA: white-on-error 3.76 -> 4.83
+@color-success:             #12b76a;
+@color-warning:             #f79009;    // used with dark text (ink-on-warning 5.09 AA)
+
+// ---------------------------------------------------------------------------
+// Surfaces / chrome
+// ---------------------------------------------------------------------------
+// Cleaner top bar: white header separated by a hairline instead of grey fill.
+@color-layout-header-background:    #ffffff;
+@color-searchbar-background:        #f7f6fc;   // violet-biased (was #f6f7f9)
+
+// Surface vs canvas. The list and sidebar stay pure white (they are the working
+// surface); the content pane sits on a barely-tinted canvas so the two read as
+// different planes. Also feeds --aurora-canvas in _system.less.
+@color-layout-content-background:   #fbfaff;
+
+// Left task rail: deep neutral navy-slate (was #2f3a3f).
+@color-taskmenu-background:         #1b2030;
+
+// List row indicator. Elastic reserves a 2px gutter on every list row
+// (`border-left: 2px solid transparent`) and colours it for the focused row —
+// an indicator that participates in layout instead of floating over it. The
+// inherited `lighten(@color-main, 20%)` came out at #adbcfa, too pale to read;
+// Aurora uses the accent itself. Single use site (elastic lists.less).
+@color-list-focus-indicator:        @color-main;
+
+// ---------------------------------------------------------------------------
+// Dark mode seeds
+// ---------------------------------------------------------------------------
+// Elastic's dark neutrals are green-teal biased throughout (#c5d1d3, #4d6066,
+// #2c373a, #374549, #161b1d, #7c949c). Aurora previously reseeded only the
+// canvas and border, which left dark mode half-migrated: green-tinted text on a
+// neutral ground. Stage 1 finishes the move onto the same violet axis as light.
+// Ratios below are against the canvas unless noted; all verified AA or better.
+@color-dark-background:     #0d0f1a;   // deeper, violet-biased canvas
+@color-dark-border:         #2a2c44;
+@color-dark-font:           #d2d1e4;   // 12.71 AAA (was #c5d1d3, green-biased)
+@color-dark-list-border:    #262a3f;
+@color-dark-list-selected-background: #2b2f4a;
+@color-dark-popover-background:       #14172a;
+@color-dark-input-border:   #7d7ba0;   // 4.74 vs canvas — control boundary
+@color-dark-input-focus:    #e8e7f4;
+@color-dark-input-addon-background:   #2b2f4a;
+
+// These two are derived in Elastic (darken(@color-dark-font, 20%) and
+// darken(@color-dark-hint, 15%)). Left derived, the violet font seed would push
+// them to 4.37 on a selected row and 3.43 for deleted rows — the latter a
+// regression on today's 4.26. Pinned explicitly instead.
+@color-dark-hint:           #9c9ac6;   // 7.14 canvas / 6.45 surface / 4.88 selected
+@color-dark-list-deleted:   #7c79bd;   // 4.84 canvas (was 4.26)
+
+// ---------------------------------------------------------------------------
+// Accessibility — WCAG 2.2 AA contrast fixes (verified with a contrast script;
+// see also styles/_a11y.less for forced-colors + focus handling)
+// ---------------------------------------------------------------------------
+// Secondary/hint text on white: 4.37 -> 5.39 (violet-biased, was #6b7076/4.99)
+@color-black-shade-text:        #6a6786;
+// Input placeholder on white: 1.92 -> 4.58 (violet-biased, was #767676)
+@color-input-placeholder:       #75738c;
+// Primary button: white label on accent was 4.32; use a slightly deeper indigo
+// for the button surface (4.32 -> 5.05) while keeping @color-main (#4c6ef5) for
+// selection tints, links and the focus ring.
+@color-btn-primary-background:  #4361ec;

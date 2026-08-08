@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora — web components (Phase 5)</title>
+<link rel="stylesheet" href="../elastic/deps/bootstrap.min.css">
+<link rel="stylesheet" href="styles/styles.min.css">
+<style>
+  body{margin:0;background:#eef0f4;font-family:system-ui,sans-serif}
+  html.dark-mode body{background:#0f141b;color:#c5d1d3}
+  .wrap{max-width:640px;margin:0 auto;padding:28px}
+  .card{background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:22px 26px;box-shadow:var(--aurora-shadow-sm)}
+  html.dark-mode .card{background:#141b22;border-color:#2a3742}
+  h2{font-size:14px;letter-spacing:.02em;text-transform:uppercase;opacity:.6;margin:0 0 18px}
+  .propform label{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eef0f4;cursor:pointer;font-size:14px}
+  html.dark-mode .propform label{border-color:#20272e}
+  .propform label:last-child{border-bottom:0}
+  .bar{display:flex;gap:12px;align-items:center;max-width:640px;margin:24px auto 0;padding:0 28px}
+  .title{font-weight:700;font-size:20px}
+  .note{max-width:640px;margin:16px auto 0;padding:0 28px;font-size:13px;opacity:.65}
+</style>
+</head>
+<body>
+<div class="bar">
+  <span class="title">Aurora · Settings</span>
+  <button class="btn btn-primary" style="margin-left:auto" onclick="document.documentElement.classList.toggle('dark-mode')">Toggle dark</button>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <h2>Displaying Messages</h2>
+    <form class="propform">
+      <label><input type="checkbox" checked> Show email address with display name</label>
+      <label><input type="checkbox"> Display remote inline images</label>
+      <label><input type="checkbox" checked> Mark previewed messages as read</label>
+      <label><input type="checkbox"> Show message preview pane</label>
+      <label><input type="checkbox" checked disabled> Advanced option (disabled)</label>
+    </form>
+  </div>
+</div>
+
+<div class="note">
+  Native <code>&lt;input type="checkbox"&gt;</code> controls inside <code>.propform</code> are progressively
+  enhanced by <code>aurora.js</code> into themed <code>&lt;sl-switch&gt;</code> web components. The native
+  inputs remain in the DOM (visually hidden) so form submission still works. Click a row's label to toggle —
+  the switch and the hidden checkbox stay in sync.
+</div>
+
+<!-- exactly what the skin ships -->
+<script type="module" src="deps/shoelace/aurora-shoelace.min.js"></script>
+<script src="aurora.js"></script>
+</body>
+</html>

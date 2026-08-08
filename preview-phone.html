@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" class="layout-phone touch">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aurora — mobile preview</title>
+<link rel="stylesheet" href="../elastic/deps/bootstrap.min.css">
+<link rel="stylesheet" href="styles/styles.min.css">
+<style>
+  /* preview-only: emulate the phone viewport chrome; the skin CSS does the rest */
+  html,body{height:100%}
+  body{margin:0;background:#eef0f4}
+  #layout{position:relative;height:100vh;overflow:hidden;background:var(--rc-bg,#fff)}
+  html.dark-mode #layout{background:#0f141b}
+  .msg{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #eef0f4;align-items:flex-start}
+  html.dark-mode .msg{border-color:#20272e;color:#c5d1d3}
+  .msg .av{width:40px;height:40px;border-radius:50%;flex:0 0 auto;color:#fff;font-weight:600;
+    display:flex;align-items:center;justify-content:center}
+  .msg .body{min-width:0;flex:1}
+  .msg .top{display:flex;justify-content:space-between;gap:8px}
+  .msg .from{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg.unread .from{color:#1b1f27}
+  html.dark-mode .msg.unread .from{color:#fff}
+  .msg .time{color:#98a2b3;font-size:12px;white-space:nowrap;flex:0 0 auto}
+  .msg .subj{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg .snip{color:#98a2b3;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg.unread{background:rgba(76,110,245,.045)}
+  .hdr{display:flex;align-items:center;gap:10px;height:56px;padding:0 14px;font-weight:700;font-size:18px}
+  .dot{width:9px;height:9px;border-radius:50%;background:#4c6ef5;flex:0 0 auto}
+  .scroller{height:calc(100vh - 56px);overflow:auto}
+</style>
+</head>
+<body class="task-mail action-none">
+<div id="layout">
+
+  <!-- messages list column (selected/visible on phone) -->
+  <div id="layout-list" class="listbox selected">
+    <div class="header hdr">
+      <span class="dot"></span> Inbox
+    </div>
+    <div id="messagelist-content" class="scroller">
+      <div class="msg unread">
+        <div class="av" style="background:#4c6ef5">MK</div>
+        <div class="body">
+          <div class="top"><span class="from">Matthias Kerstner</span><span class="time">10:24</span></div>
+          <div class="subj">Re: Aurora skin proposal — looks fresh</div>
+          <div class="snip">Love the bottom nav direction, let's keep going with…</div>
+        </div>
+      </div>
+      <div class="msg unread">
+        <div class="av" style="background:#12b76a">CI</div>
+        <div class="body">
+          <div class="top"><span class="from">CI Pipeline</span><span class="time">09:58</span></div>
+          <div class="subj">Build #4821 passed on master</div>
+          <div class="snip">All 312 checks green. Deployment is ready for review.</div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="av" style="background:#f79009">NL</div>
+        <div class="body">
+          <div class="top"><span class="from">Weekly Digest</span><span class="time">Yesterday</span></div>
+          <div class="subj">5 stories you might have missed</div>
+          <div class="snip">The best of the week, curated for you.</div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="av" style="background:#6941c6">DS</div>
+        <div class="body">
+          <div class="top"><span class="from">Design System</span><span class="time">Tue</span></div>
+          <div class="subj">Token updates for v2.1</div>
+          <div class="snip">We refreshed elevation and radius scales this sprint.</div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="av" style="background:#f04438">SEC</div>
+        <div class="body">
+          <div class="top"><span class="from">Security</span><span class="time">Mon</span></div>
+          <div class="subj">New sign-in from Firefox on Windows</div>
+          <div class="snip">If this was you, no action is needed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REAL task menu markup (from includes/menu.html) — Aurora restyles it into a bottom bar -->
+  <div id="layout-menu">
+    <div class="popover-header">
+      <img id="logo" src="../elastic/images/logo.svg" alt="Logo">
+      <a class="button icon cancel"><span class="inner">Close</span></a>
+    </div>
+    <div id="taskmenu" class="menu toolbar" role="navigation">
+      <span class="action-buttons">
+        <a class="compose"><span class="inner">Compose</span></a>
+      </span>
+      <a class="mail selected"><span class="inner">Mail</span></a>
+      <a class="contacts"><span class="inner">Contacts</span></a>
+      <a class="settings"><span class="inner">Settings</span></a>
+      <span class="special-buttons">
+        <a class="theme dark"><span class="inner">Dark</span></a>
+        <a class="about"><span class="inner">About</span></a>
+        <a class="logout"><span class="inner">Logout</span></a>
+      </span>
+    </div>
+  </div>
+
+  <!-- FAB (ui.js builds this from data-fab; emulated here) -->
+  <div class="floating-action-buttons">
+    <a class="button compose" role="button"><span class="inner">Compose</span></a>
+  </div>
+
+</div>
+<script>
+  // preview-only toggle: tap the header dot to switch light/dark
+  document.querySelector('.hdr').addEventListener('click',function(){
+    document.documentElement.classList.toggle('dark-mode');
+  });
+</script>
+</body>
+</html>

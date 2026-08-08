@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<!--
+  Aurora's blank content frame ("watermark"), shown when no message is open.
+
+  Overrides skins/elastic/watermark.html, which paints images/logo.svg at 30%
+  behind a translucent white veil. Aurora shows an empty pane instead.
+
+  Resolution: rcmail_output_html::abs_url() calls get_skin_file() with path
+  search enabled, which walks skin_paths child-first — so this file wins over
+  Elastic's without any template or config change.
+
+  NOTE: this is static HTML, not compiled from LESS, so the two colours below
+  are hand-synced with styles/tokens.less:
+      light  @color-layout-content-background  #fbfaff
+      dark   @color-dark-background            #0d0f1a
+  They must match, or the blank frame will not line up with the pane around it.
+-->
+<style type="text/css">
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  background: #fbfaff;
+}
+html.dark-mode > body {
+  background: #0d0f1a;
+}
+</style>
+<script>
+  // The iframe does not inherit the parent document's dark-mode class, so the
+  // colour mode is resolved here the same way includes/layout.html does it.
+  try {
+    if (document.cookie.indexOf('colorMode=dark') > -1
+      || (document.cookie.indexOf('colorMode=light') === -1 && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.className += ' dark-mode';
+    }
+  } catch (e) { }
+</script>
+</head>
+<body></body>
+</html>

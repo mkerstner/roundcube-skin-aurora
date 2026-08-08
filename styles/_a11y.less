@@ -1,0 +1,88 @@
+/**
+ * Aurora skin — accessibility layer (WCAG 2.2 AA)
+ *
+ * Colour-contrast fixes are seeded in tokens.less. This file owns the keyboard
+ * focus indicator, Windows High Contrast / forced-colors support, and a
+ * dark-mode link-contrast bump — all additive on top of Elastic.
+ */
+
+// ---------------------------------------------------------------------------
+// Keyboard focus indicator
+// ---------------------------------------------------------------------------
+// Soft accent ring for normal viewing, plus a transparent outline so a visible
+// indicator survives in forced-colors mode (where box-shadow is dropped).
+a:focus-visible,
+.btn:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+.form-control:focus-visible,
+.custom-select:focus-visible,
+#taskmenu > a:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--aurora-ring);
+}
+
+// ---------------------------------------------------------------------------
+// …except inside lists, which own their indicator
+// ---------------------------------------------------------------------------
+// The ring above must not apply to list rows. `program/js/list.js` puts
+// tabindex="0" on the focused row's SUBJECT CELL and focuses it, so the generic
+// `[tabindex]:focus-visible` rule paints an outward 3px box-shadow around a
+// single table cell: it bleeds 3px into the rows above and below, and stops
+// short of the row's right edge because the cell does not span the flags
+// column. The result reads as a misaligned box rather than a focus ring, and it
+// competes with Elastic's own indicator on the same row.
+//
+// Elastic's mechanism is better here — it colours the 2px gutter every row
+// already reserves, so it aligns exactly and shifts nothing. Defer to it.
+// forced-colors keeps its own `!important` indicator below, so this does not
+// leave keyboard users without one.
+.listing td:focus,
+.listing td:focus-visible,
+.listing li > a:focus,
+.listing li > a:focus-visible,
+.scroller:focus,
+.scroller:focus-visible {
+    box-shadow: none;
+    outline: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Windows High Contrast Mode / forced-colors
+// ---------------------------------------------------------------------------
+@media (forced-colors: active) {
+    // A real, system-coloured focus indicator
+    :focus-visible {
+        outline: 2px solid Highlight !important;
+        outline-offset: 2px;
+    }
+
+    // Keep interactive surfaces bounded when author colours are overridden
+    .btn,
+    .form-control,
+    .custom-select,
+    .popover,
+    .ui-dialog,
+    .ui-menu {
+        border: 1px solid ButtonBorder;
+    }
+
+    // The bottom-nav active tab conveys state by colour alone otherwise
+    html.layout-phone #taskmenu > a.selected {
+        outline: 2px solid Highlight;
+        outline-offset: -2px;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Dark-mode link / accent-text contrast (4.27 -> ~7:1 on the dark canvas)
+// ---------------------------------------------------------------------------
+html.dark-mode {
+    --aurora-link: #7f9cff;
+
+    a.aurora-accent-text,
+    .aurora-accent-text {
+        color: #7f9cff;
+    }
+}

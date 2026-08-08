@@ -1,0 +1,133 @@
+/**
+ * Aurora skin — design token SYSTEM (CSS custom properties)
+ *
+ * The single runtime source of truth for Aurora's visual language. LESS colour
+ * values (from tokens.less + Elastic's palette) are resolved at build time and
+ * emitted here as custom properties, alongside scales for spacing, radius,
+ * type, elevation, motion and density.
+ *
+ * Everything downstream — Aurora's component refinements, the mobile layer, and
+ * (Phase 5) web components — should consume these tokens rather than hard-coded
+ * values, so the whole skin can be retuned from one place.
+ *
+ * Naming: --aurora-<group>-<step>. Steps follow a 4px spacing base and a
+ * ~1.2 modular type scale on a 14px body.
+ */
+
+:root {
+    // ---- Colour (bridged from the LESS palette) -------------------------
+    --aurora-accent:          @color-main;
+    --aurora-accent-hover:    darken(@color-main, 8%);
+    --aurora-accent-active:   darken(@color-main, 14%);
+    --aurora-accent-subtle:   fade(@color-main, 10%);   // tint background
+    --aurora-on-accent:       #fff;
+    --aurora-link:            @color-link;
+
+    --aurora-success:         @color-success;
+    --aurora-warning:         @color-warning;
+    --aurora-error:           @color-error;
+
+    --aurora-ink:             @color-font;               // primary text
+    --aurora-muted:           @color-black-shade-text;   // secondary text
+    --aurora-border:          @color-border;
+    --aurora-surface:         #fff;                      // cards / raised
+    --aurora-canvas:          @color-layout-content-background;
+
+    // ---- Spacing scale (4px base) ---------------------------------------
+    --aurora-space-0:  0;
+    --aurora-space-1:  4px;
+    --aurora-space-2:  8px;
+    --aurora-space-3:  12px;
+    --aurora-space-4:  16px;
+    --aurora-space-5:  20px;
+    --aurora-space-6:  24px;
+    --aurora-space-8:  32px;
+    --aurora-space-10: 40px;
+
+    // ---- Radius scale ---------------------------------------------------
+    --aurora-radius-xs:   4px;
+    --aurora-radius-sm:   6px;
+    --aurora-radius:      10px;
+    --aurora-radius-lg:   14px;
+    --aurora-radius-xl:   20px;
+    --aurora-radius-pill: 999px;
+
+    // ---- Type scale (px, 14px body) -------------------------------------
+    --aurora-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji";
+    --aurora-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+        "Liberation Mono", monospace;
+
+    --aurora-text-xs:   11px;
+    --aurora-text-sm:   12px;
+    --aurora-text-base: 14px;
+    --aurora-text-md:   16px;
+    --aurora-text-lg:   18px;
+    --aurora-text-xl:   22px;
+    --aurora-text-2xl:  28px;
+
+    --aurora-leading-tight: 1.25;
+    --aurora-leading:       1.5;
+
+    --aurora-weight-normal:   400;
+    --aurora-weight-medium:   500;
+    --aurora-weight-semibold: 600;
+    --aurora-weight-bold:     700;
+
+    // ---- Elevation ------------------------------------------------------
+    // Tinted, not neutral: shadows derive from @color-shadow (a deeper violet)
+    // rather than the ink. Same offsets, blurs and opacities as before — only
+    // the hue changes, which is what makes a surface read as lit instead of
+    // merely outlined.
+    --aurora-shadow-xs: 0 1px 2px fade(@color-shadow, 5%);
+    --aurora-shadow-sm: 0 1px 2px fade(@color-shadow, 6%), 0 1px 3px fade(@color-shadow, 8%);
+    --aurora-shadow-md: 0 4px 12px fade(@color-shadow, 10%), 0 2px 4px fade(@color-shadow, 6%);
+    --aurora-shadow-lg: 0 12px 32px fade(@color-shadow, 16%), 0 4px 8px fade(@color-shadow, 8%);
+
+    // ---- Motion ---------------------------------------------------------
+    --aurora-ease:       cubic-bezier(0.2, 0, 0, 1);
+    --aurora-dur-fast:   100ms;
+    --aurora-dur-base:   160ms;
+    --aurora-dur-slow:   240ms;
+    --aurora-transition: var(--aurora-dur-base) var(--aurora-ease);
+
+    // ---- Focus ring -----------------------------------------------------
+    --aurora-ring: 0 0 0 3px fade(@color-main, 35%);
+
+    // Colour of the 2px gutter bar marking the selected/focused list row.
+    // Its own token because it needs a lighter value on the dark canvas.
+    --aurora-list-indicator: @color-main;
+
+    // ---- Density (comfortable = default) --------------------------------
+    --aurora-row-height:     46px;
+    --aurora-control-height: 40px;
+    --aurora-density-pad-y:  var(--aurora-space-3);
+    --aurora-density-pad-x:  var(--aurora-space-4);
+}
+
+// Dark-mode surface + elevation retuning (colours from dark.less seeds)
+html.dark-mode {
+    --aurora-surface:  #161a2b;   // violet-biased raised surface (was #141b22)
+    --aurora-canvas:   @color-dark-background;
+    --aurora-ink:      @color-dark-font;
+    --aurora-muted:    @color-dark-hint;
+    --aurora-border:   @color-dark-border;
+
+    // The accent alone only reaches 3.02 against a selected row on the dark
+    // canvas; the lighter accent used for dark-mode links gets it to 5.04.
+    --aurora-list-indicator: #7f9cff;
+
+    --aurora-shadow-xs: 0 1px 2px fade(#000, 35%);
+    --aurora-shadow-sm: 0 1px 2px fade(#000, 40%);
+    --aurora-shadow-md: 0 4px 12px fade(#000, 45%);
+    --aurora-shadow-lg: 0 12px 32px fade(#000, 55%);
+}
+
+// Compact density — opt-in via a root class (ready to wire to a preference)
+html.aurora-density-compact {
+    --aurora-row-height:     36px;
+    --aurora-control-height: 32px;
+    --aurora-density-pad-y:  var(--aurora-space-2);
+    --aurora-density-pad-x:  var(--aurora-space-3);
+}

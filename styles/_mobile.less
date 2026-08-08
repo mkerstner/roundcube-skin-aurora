@@ -1,0 +1,249 @@
+/**
+ * Aurora skin — mobile-first layer
+ *
+ * Elastic already ships a responsive, JS-driven layout: `ui.js` sets one of
+ * `html.layout-phone | layout-small | layout-normal | layout-large` on the
+ * root and swaps columns in/out. On phone it renders the task menu as a hidden
+ * left drawer (opened by the `.task-menu-button` hamburger) with compose as a
+ * floating action button.
+ *
+ * Aurora keeps that machinery but restyles the phone task navigation into a
+ * PERSISTENT BOTTOM TAB BAR — the dominant modern mobile pattern — purely in
+ * CSS, without modifying ui.js. It also adds touch-comfort, safe-area insets,
+ * a refreshed FAB, elevated sticky headers and a sheet-style content pane.
+ *
+ * NOTE: the bottom-bar rules repurpose the drawer element, so they use
+ * `!important` to win against the drawer styling Elastic applies in its own
+ * `max-width: @screen-width-xs` media query (which is exactly the range in
+ * which ui.js sets `html.layout-phone`).
+ *
+ * Two things are easy to get wrong here and are called out where they happen:
+ *   1. `.action-buttons` / `.special-buttons` wrap some of the task links, so
+ *      `#taskmenu > a` does NOT reach them — `display: contents` changes box
+ *      generation, not selector matching. All link rules use `#taskmenu a`.
+ *   2. The bar is `position: fixed`, so it does not consume layout space by
+ *      itself. Every column therefore reserves its height as padding, or the
+ *      bar buries the bottom toolbars (pagenav, content-frame-navigation,
+ *      quota) that Elastic parks at the bottom of each column.
+ */
+
+// Bottom-nav sizing tokens
+:root {
+    --aurora-nav-height:   58px;
+    --aurora-nav-bg:       @color-taskmenu-background;
+    --aurora-nav-border:   fade(#fff, 8%);
+    --aurora-nav-fg:       fade(#fff, 62%);
+    --aurora-nav-fg-active:#fff;
+    --aurora-safe-b:       env(safe-area-inset-bottom, 0px);
+    // total space the bar occupies at the bottom of the viewport
+    --aurora-nav-total:    calc(var(--aurora-nav-height) + var(--aurora-safe-b));
+    // Elastic's @layout-footer-small-height — the in-column bottom toolbars
+    --aurora-col-footer-h: @layout-footer-small-height;
+}
+
+// The bar is a dark surface in light mode; in dark mode it has to lift off the
+// dark canvas instead, otherwise it disappears into the page.
+html.dark-mode {
+    --aurora-nav-bg:     lighten(@color-dark-background, 5%);
+    --aurora-nav-border: @color-dark-border;
+}
+
+html.layout-phone {
+
+    // -----------------------------------------------------------------------
+    // Persistent bottom tab bar (repurposes #layout-menu)
+    // -----------------------------------------------------------------------
+    a.task-menu-button { display: none !important; } // hamburger no longer needed
+
+    #layout-menu {
+        position: fixed !important;
+        inset: auto 0 0 0 !important;      // pin to bottom, full width
+        top: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        display: block !important;
+        transform: none !important;
+        transition: none !important;
+        z-index: 1030;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: var(--aurora-nav-bg) !important;
+        // top hairline as an inset shadow, not a border: a border would add a
+        // pixel to the bar's height that the reserved space below doesn't know
+        // about, and the column footers would end up 1px underneath it.
+        box-shadow: inset 0 1px 0 var(--aurora-nav-border), var(--aurora-shadow-lg);
+        padding: 0 0 var(--aurora-safe-b) 0 !important;
+    }
+
+    #layout-menu .popover-header { display: none !important; }
+
+    // Flatten the wrapper spans so every task link is a direct flex item.
+    // NOTE: this only affects box generation — the links inside them are still
+    // not `#taskmenu > a`, which is why every rule below matches `#taskmenu a`.
+    #layout-menu .action-buttons,
+    #layout-menu .special-buttons {
+        display: contents;
+        background: none !important;
+    }
+
+    // Compose lives as the FAB; About is not primary on phone
+    #layout-menu .action-buttons .compose,
+    #layout-menu a.about { display: none !important; }
+
+    #taskmenu {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch !important;
+        justify-content: space-around !important;
+        gap: 0 !important;
+        height: var(--aurora-nav-height) !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+
+    // Every task link — direct children AND the ones wrapped in
+    // .action-buttons / .special-buttons (theme, about, logout).
+    #taskmenu a {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        width: auto !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 6px 2px !important;
+        border: 0 !important;                 // Elastic's drawer row separator
+        border-radius: 0 !important;
+        background: transparent !important;   // dark mode tints these otherwise
+        color: var(--aurora-nav-fg) !important;
+        text-align: center !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        transition: color var(--aurora-transition);
+
+        &:before {
+            float: none !important;
+            width: auto !important;
+            height: auto !important;
+            margin: 0 !important;
+            font-size: 1.42rem !important;
+            line-height: 1 !important;
+        }
+
+        .inner {
+            display: block !important;
+            position: static !important;
+            width: auto !important;
+            max-width: 100% !important;
+            font-size: 100% !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &:hover { color: var(--aurora-nav-fg-active) !important; }
+
+        &.selected,
+        &.selected .inner { color: var(--aurora-nav-fg-active) !important; }
+
+        &.selected:before { color: @color-main !important; }
+
+        // subtle active pill above the icon
+        &.selected { box-shadow: inset 0 3px 0 @color-main; }
+
+        &.logout:before { color: fade(@color-error, 85%) !important; }
+    }
+
+    // -----------------------------------------------------------------------
+    // Reserve the bar's height inside every layout column.
+    //
+    // The bar is fixed, so it takes no space of its own. Elastic puts a toolbar
+    // at the BOTTOM of each column (.pagenav in the list, the ui.js-built
+    // .content-frame-navigation in the content pane, the quota widget in the
+    // sidebar) — without this they sit underneath the bar and are neither
+    // visible nor clickable.
+    //
+    // Keyed off `#layout-menu ~ …` on purpose: templates that ship no task menu
+    // (login, dialogs, framed pages) have no bar and must not reserve space.
+    // -----------------------------------------------------------------------
+    #layout-menu ~ #layout-sidebar,
+    #layout-menu ~ #layout-list,
+    #layout-menu ~ #layout-content {
+        padding-bottom: var(--aurora-nav-total);
+    }
+
+    // Toasts are `position: absolute; bottom: 0` on phone with a z-index below
+    // the bar — lift them above it.
+    #messagestack {
+        bottom: var(--aurora-nav-total);
+    }
+
+    // -----------------------------------------------------------------------
+    // Floating compose button — larger, accent, elevated, above the bar
+    //
+    // Absolutely positioned against the column's PADDING box, so the reserved
+    // space above does not offset it; the bar height still has to be added.
+    // -----------------------------------------------------------------------
+    .floating-action-buttons {
+        bottom: calc(var(--aurora-nav-total) + 18px) !important;
+        right: 18px !important;
+
+        a.button {
+            width: 58px !important;
+            height: 58px !important;
+            border-radius: 18px !important;   // squircle-ish, modern
+            background: @color-main !important;
+            box-shadow: var(--aurora-shadow-lg) !important;
+
+            &:before { font-size: 1.6rem !important; }
+        }
+    }
+
+    // …and clear the column's own bottom toolbar when it has one
+    .footer:not(:empty) + .floating-action-buttons {
+        bottom: calc(var(--aurora-nav-total) + var(--aurora-col-footer-h) + 18px) !important;
+    }
+
+    // -----------------------------------------------------------------------
+    // Elevated, sticky mobile headers
+    // -----------------------------------------------------------------------
+    #layout > div > .header {
+        box-shadow: var(--aurora-shadow-sm);
+        z-index: 2;
+    }
+
+    // -----------------------------------------------------------------------
+    // Sheet-style content pane when a message is open
+    // -----------------------------------------------------------------------
+    #layout-content.selected {
+        border-top-left-radius: var(--aurora-radius-lg);
+        border-top-right-radius: var(--aurora-radius-lg);
+        overflow: hidden;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Touch comfort — larger, roomier list rows on touch layouts
+// ---------------------------------------------------------------------------
+html.layout-phone,
+html.layout-small {
+    .listing tbody td,
+    table.listing td {
+        padding-top: .55rem;
+        padding-bottom: .55rem;
+    }
+
+    // comfortable minimum tap target on interactive rows/buttons
+    .listing tr,
+    .menu.listing a,
+    a.button.icon {
+        min-height: 44px;
+    }
+}

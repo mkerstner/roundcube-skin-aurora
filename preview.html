@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora — token &amp; component preview</title>
+<!-- Inherited Bootstrap (from parent Elastic skin) + Aurora compiled CSS -->
+<link rel="stylesheet" href="../elastic/deps/bootstrap.min.css">
+<link rel="stylesheet" href="styles/styles.min.css">
+<style>
+  /* preview-only scaffolding (not part of the skin) */
+  body{margin:0;background:#eef0f4}
+  html.dark-mode body{background:#0b0f14}
+  .pv-wrap{max-width:1080px;margin:0 auto;padding:24px}
+  .pv-bar{display:flex;align-items:center;gap:16px;background:var(--pv-header,#fff);
+    border-bottom:1px solid #e4e7ec;padding:12px 20px;position:sticky;top:0;z-index:5;
+    box-shadow:var(--aurora-shadow-sm)}
+  html.dark-mode .pv-bar{background:#141b22;border-color:#2a3742}
+  .pv-rail{width:56px;height:56px;border-radius:14px;background:#1b2030;display:flex;
+    align-items:center;justify-content:center;color:#fff}
+  .pv-rail .fresh{width:26px;height:26px;border-radius:8px;background:#4c6ef5}
+  .pv-card{background:#fff;border:1px solid #e4e7ec;border-radius:var(--aurora-radius);
+    padding:20px 22px;margin:18px 0;box-shadow:var(--aurora-shadow-sm)}
+  html.dark-mode .pv-card{background:#141b22;border-color:#2a3742;color:#c5d1d3}
+  .pv-card h3{margin:0 0 14px;font-size:14px;letter-spacing:.02em;text-transform:uppercase;
+    opacity:.6}
+  .pv-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .sw{display:flex;flex-direction:column;gap:6px;align-items:center;font-size:11px}
+  .sw i{width:64px;height:44px;border-radius:10px;display:block;box-shadow:var(--aurora-shadow-sm)}
+  .pv-list{border:1px solid #e4e7ec;border-radius:var(--aurora-radius);overflow:hidden}
+  html.dark-mode .pv-list{border-color:#2a3742}
+  .pv-li{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid #eef0f4;align-items:center}
+  html.dark-mode .pv-li{border-color:#20272e}
+  .pv-li.sel{background:rgba(76,110,245,.10);box-shadow:inset 3px 0 0 #4c6ef5}
+  .pv-av{width:36px;height:36px;border-radius:50%;background:#4c6ef5;color:#fff;display:flex;
+    align-items:center;justify-content:center;font-weight:600;flex:0 0 auto}
+  .pv-li .who{font-weight:600}.pv-li .sub{opacity:.6;font-size:13px}
+  .pv-toggle{margin-left:auto}
+  .title{font-size:20px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="pv-bar">
+  <div class="pv-rail"><span class="fresh"></span></div>
+  <div class="title">Aurora</div>
+  <input class="form-control" style="max-width:280px" placeholder="Search mail…">
+  <button class="btn btn-secondary pv-toggle" onclick="document.documentElement.classList.toggle('aurora-density-compact')">Toggle density</button>
+  <button class="btn btn-primary" onclick="document.documentElement.classList.toggle('dark-mode')">Toggle dark</button>
+</div>
+
+<div class="pv-wrap">
+
+  <div class="pv-card">
+    <h3>Palette (compiled from tokens.less)</h3>
+    <div class="pv-row">
+      <div class="sw"><i style="background:#4c6ef5"></i>accent</div>
+      <div class="sw"><i style="background:#3b5bdb"></i>link</div>
+      <div class="sw"><i style="background:#1b2030"></i>task&nbsp;rail</div>
+      <div class="sw"><i style="background:#12b76a"></i>success</div>
+      <div class="sw"><i style="background:#f79009"></i>warning</div>
+      <div class="sw"><i style="background:#f04438"></i>error</div>
+      <div class="sw"><i style="background:#1b1f27"></i>ink</div>
+      <div class="sw"><i style="background:#e4e7ec"></i>border</div>
+    </div>
+  </div>
+
+  <div class="pv-card">
+    <h3>Design tokens (Phase 2) — consumed live from the compiled CSS</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div style="font-size:12px;opacity:.6;margin-bottom:8px">TYPE SCALE</div>
+        <div style="font-size:var(--aurora-text-2xl);line-height:1.2;font-weight:700">Aurora 28</div>
+        <div style="font-size:var(--aurora-text-xl);line-height:1.3;font-weight:600">Heading 22</div>
+        <div style="font-size:var(--aurora-text-lg)">Subhead 18</div>
+        <div style="font-size:var(--aurora-text-base)">Body 14 — the quick brown fox</div>
+        <div style="font-size:var(--aurora-text-sm);opacity:.7">Small 12 · meta</div>
+      </div>
+      <div>
+        <div style="font-size:12px;opacity:.6;margin-bottom:8px">RADIUS SCALE</div>
+        <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:18px">
+          <div style="width:44px;height:44px;background:#4c6ef5;border-radius:var(--aurora-radius-xs)"></div>
+          <div style="width:44px;height:44px;background:#4c6ef5;border-radius:var(--aurora-radius-sm)"></div>
+          <div style="width:44px;height:44px;background:#4c6ef5;border-radius:var(--aurora-radius)"></div>
+          <div style="width:44px;height:44px;background:#4c6ef5;border-radius:var(--aurora-radius-lg)"></div>
+          <div style="width:44px;height:44px;background:#4c6ef5;border-radius:var(--aurora-radius-xl)"></div>
+        </div>
+        <div style="font-size:12px;opacity:.6;margin-bottom:8px">SPACING SCALE (4px base)</div>
+        <div style="display:flex;gap:6px;align-items:flex-end">
+          <div style="width:var(--aurora-space-1);height:var(--aurora-space-1);background:#12b76a"></div>
+          <div style="width:var(--aurora-space-2);height:var(--aurora-space-2);background:#12b76a"></div>
+          <div style="width:var(--aurora-space-3);height:var(--aurora-space-3);background:#12b76a"></div>
+          <div style="width:var(--aurora-space-4);height:var(--aurora-space-4);background:#12b76a"></div>
+          <div style="width:var(--aurora-space-6);height:var(--aurora-space-6);background:#12b76a"></div>
+          <div style="width:var(--aurora-space-8);height:var(--aurora-space-8);background:#12b76a"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;font-size:13px;opacity:.7">↑ &ldquo;Toggle density&rdquo; in the top bar resizes the buttons/inputs below via <code>--aurora-control-height</code>.</div>
+  </div>
+
+  <div class="pv-card">
+    <h3>Buttons &amp; inputs — softer radii, focus ring</h3>
+    <div class="pv-row" style="margin-bottom:14px">
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+    <div class="pv-row">
+      <input class="form-control" style="max-width:240px" placeholder="Recipient">
+      <input class="form-control" style="max-width:240px" placeholder="Click to see focus ring">
+    </div>
+  </div>
+
+  <div class="pv-card">
+    <h3>Semantic messages</h3>
+    <div class="alert alert-info">A new message has arrived.</div>
+    <div class="alert alert-success">Message sent successfully.</div>
+    <div class="alert alert-warning">This sender is not in your contacts.</div>
+    <div class="alert alert-danger">Could not connect to the server.</div>
+  </div>
+
+  <div class="pv-card">
+    <h3>Message list — accent selection</h3>
+    <div class="pv-list">
+      <div class="pv-li sel"><div class="pv-av">MK</div><div><div class="who">Matthias Kerstner</div><div class="sub">Re: Aurora skin proposal — looks fresh</div></div></div>
+      <div class="pv-li"><div class="pv-av" style="background:#12b76a">CI</div><div><div class="who">CI Pipeline</div><div class="sub">Build #4821 passed</div></div></div>
+      <div class="pv-li"><div class="pv-av" style="background:#f79009">NL</div><div><div class="who">Newsletter</div><div class="sub">Your weekly digest is here</div></div></div>
+    </div>
+  </div>
+
+  <div class="pv-card">
+    <h3>Elevation tokens</h3>
+    <div class="pv-row">
+      <div class="sw"><i style="box-shadow:var(--aurora-shadow-sm)"></i>sm</div>
+      <div class="sw"><i style="box-shadow:var(--aurora-shadow-md)"></i>md</div>
+      <div class="sw"><i style="box-shadow:var(--aurora-shadow-lg)"></i>lg</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

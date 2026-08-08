@@ -1,0 +1,26 @@
+/**
+ * Aurora skin — main stylesheet
+ *
+ * Aurora extends Elastic. Rather than fork Elastic's ~4k lines of LESS, this
+ * entry point pulls Elastic's source in directly and layers Aurora's design
+ * tokens on top:
+ *
+ *   1. Import Elastic's variables + mixins by reference (no CSS output, just
+ *      brings the symbols into scope).
+ *   2. Import Aurora's token overrides — these win via LESS lazy evaluation.
+ *   3. Import Elastic's full stylesheet. Its own internal `@import "variables"`
+ *      / `@import "mixins"` are de-duplicated by LESS (imports default to
+ *      `once`, keyed on resolved path), so every rule renders with Aurora's
+ *      token values.
+ *   4. Import Aurora's component-level refinements (radii, elevation, font,
+ *      CSS custom properties).
+ */
+
+@import (reference) "../../elastic/styles/variables.less";
+@import (reference) "../../elastic/styles/mixins.less";
+
+@import "tokens.less";
+
+@import "../../elastic/styles/styles.less";
+
+@import (optional) "_styles.less";
