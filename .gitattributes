@@ -1,0 +1,17 @@
+# Keep development material in the repository but out of release archives and
+# Composer installs (`git archive` honours export-ignore).
+preview.html            export-ignore
+preview-phone.html      export-ignore
+preview-components.html export-ignore
+dev                     export-ignore
+docs                    export-ignore
+package.json            export-ignore
+.gitattributes          export-ignore
+.gitignore              export-ignore
+
+# Shell scripts run inside Linux containers: keep LF even with core.autocrlf.
+*.sh                    text eol=lf
+
+# Compiled output: not for line-ending changes or diffs.
+*.min.css               -text -diff
+*.min.js                -text -diff

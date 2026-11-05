@@ -2,48 +2,127 @@
  * Aurora skin — accessibility layer (WCAG 2.2 AA)
  *
  * Colour-contrast fixes are seeded in tokens.less. This file owns the keyboard
- * focus indicator, Windows High Contrast / forced-colors support, and a
- * dark-mode link-contrast bump — all additive on top of Elastic.
+ * focus indicator, Windows High Contrast / forced-colors support, and dark-mode
+ * link colours — all additive on top of Elastic.
  */
 
 // ---------------------------------------------------------------------------
 // Keyboard focus indicator
 // ---------------------------------------------------------------------------
-// Soft accent ring for normal viewing, plus a transparent outline so a visible
-// indicator survives in forced-colors mode (where box-shadow is dropped).
-a:focus-visible,
-.btn:focus-visible,
-button:focus-visible,
-[tabindex]:focus-visible,
+// A solid 2px outline in the accent (see --aurora-focus in _system.less). The
+// offset leaves a gap that shows the real background, so the outline still
+// reads next to a filled control such as the primary button, and it leaves
+// box-shadows alone (the FAB's elevation, the phone tab bar's active pill and
+// Elastic's own :focus glows all stay).
+//
+// Why `!important`: Elastic removes the outline on :focus in five places —
+// `.menu a` (every toolbar), `.header a.button.icon` (every header icon
+// button, scoring (0,5,1)), `.input-group a`, `.image-tools a` and the
+// quick-search `.searchbar input` — to hide the mouse-click outline. This rule
+// is limited to :focus-visible, so it leaves mouse focus alone and only
+// insists for keyboard focus; matching each of Elastic's selectors instead
+// would break again with the next one a plugin or Elastic adds.
+//
+// Elements whose indicator lives elsewhere (see the exemptions below) are
+// excluded INSIDE the selector rather than overridden afterwards, so no second
+// `!important` is needed and forced-colors mode still wins for them. Both
+// lists sit inside `:where()` (a bare `:not()` would take the specificity of
+// its heaviest argument, (0,1,2)), holding the rule at (0,1,0), so the
+// clipped-bar insets below override its offset by plain specificity.
+// Exempt, each with its indicator elsewhere: list cells and list links (the 2px
+// gutter — but NOT toolbars: Elastic marks them `.menu.toolbar.listing` and they
+// have no gutter, so they keep the outline), programmatic scroll targets, the
+// recipient field's inner input (the wrapper's `.focus` border), text fields
+// (their focus border; some carry a tabindex and would otherwise get both), and
+// Bootstrap's visually hidden custom-control inputs (see the rule below).
+@aurora-focus-exempt: ~".listing td, .listing:not(.toolbar) li > a, .scroller, .recipient-input input, .form-control, .custom-select, .custom-control-input";
+
+:where(a, .btn, button, [tabindex], .searchbar input):where(:not(@{aurora-focus-exempt})):focus-visible {
+    outline: var(--aurora-focus-width) solid var(--aurora-focus) !important;
+    outline-offset: var(--aurora-focus-offset);
+}
+
+// Bootstrap switches and checkboxes (`.custom-switch`, `.custom-checkbox`, e.g.
+// the compose options): the real input is invisible (opacity 0, z-index -1), so
+// an outline on it is invisible too, and Elastic paints nothing on the visible
+// box. Draw the indicator on the box itself, the label's ::before.
+.custom-control-input:focus-visible ~ .custom-control-label::before {
+    outline: var(--aurora-focus-width) solid var(--aurora-focus);
+    outline-offset: var(--aurora-focus-offset);
+}
+
+// Text fields: Elastic's focus border is the indicator (4.93 vs white), the
+// ring is a soft halo on top. The transparent outline exists only so that
+// forced-colors mode, which drops box-shadow, still has something to paint.
 .form-control:focus-visible,
-.custom-select:focus-visible,
-#taskmenu > a:focus-visible {
+.custom-select:focus-visible {
     outline: 2px solid transparent;
     outline-offset: 2px;
     box-shadow: var(--aurora-ring);
 }
 
+// Bars that clip: column headers/footers and the quick-search bar are
+// `overflow: hidden`, the task rail `overflow-x: hidden`, and their controls
+// fill the bar, so an outward outline would be cut off. Draw it inside instead.
+#layout > div > .header,
+#layout > div > .footer,
+#taskmenu,
+.searchbar {
+    :focus-visible {
+        outline-offset: calc(-1 * var(--aurora-focus-width));
+    }
+}
+
+// Dark grounds in light mode take the accent's light tint (tokens.less,
+// "accent roles"): the task rail and bottom tab bar (3.29 -> 5.63), and the
+// navy dialog header Elastic uses on phone/small layouts (2.88 -> 4.93). Only
+// there — on desktop the same header is light grey and keeps the accent.
+#taskmenu a:focus-visible,
+#layout-menu .popover-header :focus-visible,
+html.layout-phone .popover-header :focus-visible,
+html.layout-small .popover-header :focus-visible {
+    outline-color: @color-aurora-accent-light !important;
+}
+
 // ---------------------------------------------------------------------------
-// …except inside lists, which own their indicator
+// …except where the visible control is an ANCESTOR of the focused element
 // ---------------------------------------------------------------------------
-// The ring above must not apply to list rows. `program/js/list.js` puts
-// tabindex="0" on the focused row's SUBJECT CELL and focuses it, so the generic
-// `[tabindex]:focus-visible` rule paints an outward 3px box-shadow around a
-// single table cell: it bleeds 3px into the rows above and below, and stops
-// short of the row's right edge because the cell does not span the flags
-// column. The result reads as a misaligned box rather than a focus ring, and it
-// competes with Elastic's own indicator on the same row.
+// `[tabindex]` above is a deliberate safety net for custom focusable widgets,
+// but it also matches elements that merely carry a tabindex while the thing the
+// user perceives as "the control" is a parent. Painting an outward ring on the
+// inner element then draws a box in the wrong place — inside, or across, the
+// real control. Elastic already gives each of these a focus treatment on the
+// ancestor, so defer to it rather than adding a second, misplaced indicator.
 //
-// Elastic's mechanism is better here — it colours the 2px gutter every row
-// already reserves, so it aligns exactly and shifts nothing. Defer to it.
-// forced-colors keeps its own `!important` indicator below, so this does not
-// leave keyboard users without one.
+// Two cases, both verified against Elastic's own source:
+//
+// 1. List rows — `program/js/list.js:560` puts tabindex="0" on the focused
+//    row's SUBJECT CELL and focuses it, so the ring became a 3px box-shadow
+//    around one table cell: bleeding into the rows above and below, and
+//    stopping short of the row's right edge because the cell does not span the
+//    flags column. Elastic instead colours the 2px gutter every row already
+//    reserves, which aligns exactly and shifts nothing.
+//
+// 2. Recipient fields (To / Cc / Bcc / Reply-To / Followup-To) — `ui.js`
+//    `recipient_input()` builds `ul.form-control.recipient-input > li.input >
+//    input` and copies the original field's tabindex onto that inner <input>.
+//    The ring therefore drew a second rounded box INSIDE the field. Elastic
+//    puts a `.focus` class on the <ul> wrapper, which applies its
+//    `.style-input-focus()` mixin (border colour + a .2rem ring) to the control
+//    the user actually sees.
+//
+// These are listed in @aurora-focus-exempt above, so the indicator never
+// matches them; the block below additionally clears any outline or shadow on
+// them. forced-colors keeps its own `!important` indicator below, so neither
+// case leaves keyboard users without one.
 .listing td:focus,
 .listing td:focus-visible,
-.listing li > a:focus,
-.listing li > a:focus-visible,
+.listing:not(.toolbar) li > a:focus,
+.listing:not(.toolbar) li > a:focus-visible,
 .scroller:focus,
-.scroller:focus-visible {
+.scroller:focus-visible,
+.recipient-input input:focus,
+.recipient-input input:focus-visible {
     box-shadow: none;
     outline: 0;
 }
@@ -76,13 +155,29 @@ button:focus-visible,
 }
 
 // ---------------------------------------------------------------------------
-// Dark-mode link / accent-text contrast (4.27 -> ~7:1 on the dark canvas)
+// Dark-mode link contrast (3.37 -> 8.36 on the dark canvas)
 // ---------------------------------------------------------------------------
-html.dark-mode {
-    --aurora-link: #7f9cff;
+// Elastic colours every link with `a { color: @color-link }` and never replaces
+// that in dark mode, so plain links kept the LIGHT link colour on the dark
+// canvas. (An earlier version of this block only set a custom property and a
+// utility class that nothing consumed, so it had no effect.)
+//
+// `:where()` keeps these at the specificity of Elastic's own base rules —
+// (0,0,1) for `a`, (0,1,0) for `.btn-link` — so they replace exactly those and
+// nothing else: every place Elastic gives a link a context colour in dark mode
+// (menus, lists, toolbars, the search bar) is more specific and still wins.
+:where(html.dark-mode) a {
+    color: @color-aurora-dark-link;
 
-    a.aurora-accent-text,
-    .aurora-accent-text {
-        color: #7f9cff;
+    &:hover {
+        color: lighten(@color-aurora-dark-link, 5%);
     }
+}
+
+:where(html.dark-mode) .btn-link {
+    color: @color-aurora-dark-link;
+}
+
+html.dark-mode .aurora-accent-text {
+    color: @color-aurora-dark-link;
 }

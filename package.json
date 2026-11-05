@@ -1,0 +1,18 @@
+{
+    "name": "roundcube-skin-aurora",
+    "private": true,
+    "description": "Build tooling for the Aurora skin. Roundcube users do not need this: the compiled files are part of the release.",
+    "license": "CC-BY-SA-3.0",
+    "scripts": {
+        "build": "npm run build:css && npm run build:js",
+        "build:css": "lessc --clean-css=\"--s1 --advanced\" styles/styles.less styles/styles.min.css && lessc --clean-css=\"--s1 --advanced\" styles/print.less styles/print.min.css && lessc --clean-css=\"--s1 --advanced\" styles/embed.less styles/embed.min.css",
+        "build:js": "esbuild src/webcomponents.js --bundle --format=esm --minify --outfile=deps/shoelace/aurora-shoelace.min.js --log-level=warning",
+        "test": "node dev/audit/contrast.js --fails && node dev/audit/accent-text-scan.js"
+    },
+    "devDependencies": {
+        "@shoelace-style/shoelace": "^2.20.1",
+        "esbuild": "^0.28.1",
+        "less": "^4.2.0",
+        "less-plugin-clean-css": "^1.5.1"
+    }
+}

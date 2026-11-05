@@ -14,12 +14,50 @@
  */
 
 // ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+// System UI stack instead of Elastic's Roboto webfont. A token because two
+// stylesheets need it: styles.less through --aurora-font-sans, and embed.less
+// (the HTML editor and embedded views), which has no custom properties.
+@aurora-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji";
+
+// ---------------------------------------------------------------------------
 // Brand / accent
 // ---------------------------------------------------------------------------
-// Modern indigo-blue accent. Everything (buttons, badges, selection, focus
-// rings, datepicker, blockquotes, dark-mode accent) derives from this.
-@color-main:                #4c6ef5;
-@color-link:                #3b5bdb;   // slightly darker for AA text contrast on white
+// Stage 2 of the "joyful" pass: an indigo-violet of Aurora's own instead of
+// Open Color indigo-5 (#4c6ef5), the web's most common "app blue". Selection
+// tints, focus borders, badges, checkboxes, the datepicker and blockquotes all
+// derive from @color-main.
+@color-main:                #5b5bf5;   // white on it 4.32 -> 4.93: menu hover, unread badges, datepicker now AA
+@color-link:                #4a3fd6;   // 7.06 on white (was #3b5bdb, 5.67)
+
+// Accent ROLES. One accent cannot serve every context, so each use takes the
+// variant made for its ground:
+//   * a FILL that carries white content (buttons, badges, FAB) -> @color-main
+//   * accent TEXT on a light ground                            -> @color-link
+//   * accent FOREGROUND on a dark ground (task rail, dark mode) -> the light tint
+// Elastic uses @color-main for all three, which is why white-on-accent, the
+// rail's Compose label and dark-mode selected rows failed AA before this pass.
+@color-aurora-accent-light:     #8b8cff;   // 5.63 on the rail, 6.63 on the dark canvas
+@color-aurora-accent-lighter:   #a5a6ff;   // hover step, 5.40 on the rail's hover fill
+@color-aurora-dark-link:        #9aa5ff;   // links in dark mode, 8.36 on the canvas
+
+// Spark — Aurora's second hue, a teal counterpoint to the indigo. GRAPHICS ONLY
+// in light mode: 3.74 on white clears the 3:1 non-text bar (WCAG 1.4.11) but not
+// 4.5 for text, so it must never colour words on a light ground. On dark it
+// reaches 10.25 and the vivid step is used instead. Stage 2 spends it on the
+// unread indicator only; stage 3 adds the avatar gradients and the wash.
+@color-aurora-spark:            #0d9488;
+@color-aurora-spark-vivid:      #2dd4bf;
+
+// Elastic sites re-pointed to the right role (all derive from @color-main otherwise)
+@color-list-recent:                     @color-link;    // folder name with new mail (text)
+@color-message-link:                    @color-link;    // links inside notices (4.62 -> 6.80)
+@color-datepicker-highlight:            @color-link;    // today / hovered day (4.19 -> 6.00)
+@color-taskmenu-button-action:          @color-aurora-accent-light;    // rail Compose (3.75 -> 5.63)
+@color-taskmenu-button-action-hover:    @color-aurora-accent-lighter;  // (2.76 -> 5.40)
 
 // ---------------------------------------------------------------------------
 // Neutrals / ink
@@ -61,8 +99,53 @@
 // different planes. Also feeds --aurora-canvas in _system.less.
 @color-layout-content-background:   #fbfaff;
 
-// Left task rail: deep neutral navy-slate (was #2f3a3f).
-@color-taskmenu-background:         #1b2030;
+// Left task rail / phone tab bar (stage 3): a vertical gradient from this seed
+// to @color-aurora-rail-end, drawn in _styles.less. Elastic derives the rail's
+// hover/selected fill from the seed (lighten 10% -> #302b5d). Was #1b2030
+// (and Elastic's #2f3a3f). Labels 16.50 / 17.81, Compose 5.73 / 6.18.
+@color-taskmenu-background:         #1e1b3a;
+@color-aurora-rail-end:             #171430;
+
+// Dark mode gets a rail of its own: Elastic leaves it transparent. A barely
+// raised gradient (rail top vs canvas 1.12) that keeps Elastic's right border.
+@color-aurora-dark-rail-top:        lighten(@color-dark-background, 6%);   // #171b2e
+@color-aurora-dark-rail-end:        lighten(@color-dark-background, 2%);   // #101321
+
+// Raised surface in dark mode (cards, dialogs; --aurora-surface).
+@color-aurora-dark-surface:         #161a2b;
+
+// Error as a FOREGROUND on a dark ground — the error counterpart of the
+// accent's light tint. The rail's Logout label is red text on the dark rail;
+// @color-error reached only 3.41 (2.67 on hover). Now 6.54 / 5.11.
+@color-aurora-error-light:              #ff7b72;
+@color-taskmenu-button-logout:          @color-aurora-error-light;
+@color-taskmenu-button-logout-hover:    @color-aurora-error-light;
+
+// Secondary buttons carry a white label on lighten(@color-black, 50%) =
+// #837dc9, 3.66 (Elastic's own #8b9fa7 was 2.76). A fill carrying white has to
+// hold it: the muted ink gives 5.39.
+@color-btn-secondary-background:    @color-black-shade-text;
+
+// Status toasts (stage 3; rules in _styles.less): ink on a tint of the status
+// colour, icon in a deeper step. Ratios: text / icon against the tint.
+@color-aurora-toast-info:           mix(@color-main, #fff, 12%);       // 12.08
+@color-aurora-toast-success:        mix(@color-success, #fff, 14%);    // 12.43
+@color-aurora-toast-warning:        mix(@color-warning, #fff, 16%);    // 12.40
+@color-aurora-toast-error:          mix(@color-error, #fff, 12%);      // 11.85
+@color-aurora-toast-info-icon:      @color-link;                       // 6.00
+@color-aurora-toast-success-icon:   darken(@color-success, 12%);       // 4.42
+@color-aurora-toast-warning-icon:   darken(@color-warning, 18%);       // 4.57
+@color-aurora-toast-error-icon:     @color-error;                      // 4.03
+
+// …and in dark mode: dark font on a dark tint, icon in a lighter step.
+@color-aurora-dark-toast-info:          mix(@color-main, @color-aurora-dark-surface, 26%);     // 8.71
+@color-aurora-dark-toast-success:       mix(@color-success, @color-aurora-dark-surface, 22%);  // 7.95
+@color-aurora-dark-toast-warning:       mix(@color-warning, @color-aurora-dark-surface, 22%);  // 7.80
+@color-aurora-dark-toast-error:         mix(@color-error, @color-aurora-dark-surface, 24%);    // 9.45
+@color-aurora-dark-toast-info-icon:     @color-aurora-accent-light;       // 4.54
+@color-aurora-dark-toast-success-icon:  lighten(@color-success, 12%);     // 7.44
+@color-aurora-dark-toast-warning-icon:  lighten(@color-warning, 8%);      // 5.69
+@color-aurora-dark-toast-error-icon:    lighten(@color-error, 18%);       // 4.85
 
 // List row indicator. Elastic reserves a 2px gutter on every list row
 // (`border-left: 2px solid transparent`) and colours it for the focused row —
@@ -85,6 +168,9 @@
 @color-dark-list-border:    #262a3f;
 @color-dark-list-selected-background: #2b2f4a;
 @color-dark-popover-background:       #14172a;
+// Elastic derives this from a literal, lighten(#161b1d, 50%) = #8b9fa7, the one
+// green-grey neutral stage 1 missed. Same luminance, on the violet axis.
+@color-dark-popover-border:           @color-dark-hint;
 @color-dark-input-border:   #7d7ba0;   // 4.74 vs canvas — control boundary
 @color-dark-input-focus:    #e8e7f4;
 @color-dark-input-addon-background:   #2b2f4a;
@@ -96,6 +182,20 @@
 @color-dark-hint:           #9c9ac6;   // 7.14 canvas / 6.45 surface / 4.88 selected
 @color-dark-list-deleted:   #7c79bd;   // 4.84 canvas (was 4.26)
 
+// Dark-mode accent. Elastic paints the selected row's subject text and the focus
+// border in @color-main, and derives dark buttons/switches from
+// darken(@color-main, 30%) — a near-navy that sank into the canvas (a checked
+// switch track measured 1.64). Re-pointed per the accent roles above.
+@color-dark-list-selected:      @color-aurora-accent-light;     // selected subject (3.02 -> 4.53)
+@color-dark-input-border-focus: @color-aurora-accent-light;     // 6.63 vs canvas
+@color-dark-main:               @color-btn-primary-background;  // same primary button as light; switch track 3.04
+@color-dark-btn:                #fff;   // dark button labels; Elastic's #f1f1f7 left primary :hover at 4.40
+
+// Dark scrollbar thumb. Elastic derives it as darken(@color-main, 25%): with
+// this accent a saturated blue bar along every scroll pane, and only ~1.4
+// against its track. The dark control-boundary grey is quieter and clearer.
+@color-dark-scrollbar-thumb:    @color-dark-input-border;     // 3.38 vs the track, 4.74 vs the canvas
+
 // ---------------------------------------------------------------------------
 // Accessibility — WCAG 2.2 AA contrast fixes (verified with a contrast script;
 // see also styles/_a11y.less for forced-colors + focus handling)
@@ -104,7 +204,6 @@
 @color-black-shade-text:        #6a6786;
 // Input placeholder on white: 1.92 -> 4.58 (violet-biased, was #767676)
 @color-input-placeholder:       #75738c;
-// Primary button: white label on accent was 4.32; use a slightly deeper indigo
-// for the button surface (4.32 -> 5.05) while keeping @color-main (#4c6ef5) for
-// selection tints, links and the focus ring.
-@color-btn-primary-background:  #4361ec;
+// Primary button: a deeper indigo than the accent, so the label clears AA with
+// room to spare (6.29; was #4361ec at 5.05). Also the dark-mode primary button.
+@color-btn-primary-background:  #4f46e5;

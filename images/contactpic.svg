@@ -1,3 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <path d="M256 246c50.5 0 91.4-40.9 91.4-91.4S306.5 63.1 256 63.1s-91.4 40.9-91.4 91.4S205.5 246 256 246zm64 22.9h-11.9c-15.9 7.3-33.5 11.4-52.1 11.4s-36.1-4.1-52.1-11.4H192c-53 0-96 43-96 96v29.7c0 18.9 15.4 34.3 34.3 34.3h251.4c18.9 0 34.3-15.4 34.3-34.3v-29.7c0-53-43-96-96-96z" fill="#ccc"/>
+  <!-- Aurora avatar placeholder: accent-to-violet gradient (one of the four
+       gradient surfaces) with Elastic's person glyph in white, scaled to sit
+       inside both the round message-header photo and the rounded contact card.
+       Full-bleed and opaque, so the container's own background never shows. -->
+  <defs>
+    <linearGradient id="aurora-avatar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5b5bf5"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="aurora-avatar-edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".18"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#aurora-avatar)"/>
+  <rect width="512" height="512" fill="url(#aurora-avatar-edge)"/>
+  <path transform="translate(64 72) scale(.75)" fill="#fff" fill-opacity=".92" d="M256 246c50.5 0 91.4-40.9 91.4-91.4S306.5 63.1 256 63.1s-91.4 40.9-91.4 91.4S205.5 246 256 246zm64 22.9h-11.9c-15.9 7.3-33.5 11.4-52.1 11.4s-36.1-4.1-52.1-11.4H192c-53 0-96 43-96 96v29.7c0 18.9 15.4 34.3 34.3 34.3h251.4c18.9 0 34.3-15.4 34.3-34.3v-29.7c0-53-43-96-96-96z"/>
 </svg>

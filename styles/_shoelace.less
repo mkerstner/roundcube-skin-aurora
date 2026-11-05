@@ -18,9 +18,12 @@
     --sl-color-neutral-0:   #ffffff;                // knob (stays light for contrast)
     --sl-color-neutral-400: #d2cfe2;                // unchecked track (violet-biased)
 
-    // Focus
-    --sl-focus-ring:        var(--aurora-ring);
-    --sl-focus-ring-offset: 2px;
+    // Focus. Shoelace applies this as `outline: var(--sl-focus-ring)`, so it
+    // must be an OUTLINE value (style width colour). It used to point at
+    // --aurora-ring, a box-shadow value, which made the outline invalid and
+    // left the switch with no focus indicator at all.
+    --sl-focus-ring:        solid var(--aurora-focus-width) var(--aurora-focus);
+    --sl-focus-ring-offset: var(--aurora-focus-offset);
 
     // Typography (labels / help text)
     --sl-input-font-family:  var(--aurora-font-sans);

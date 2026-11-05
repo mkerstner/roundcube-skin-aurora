@@ -9,3 +9,9 @@
 @import "tokens.less";
 
 @import "../../elastic/styles/embed.less";
+
+// Elastic's .font-family mixin is Roboto. Later definitions win, as in
+// _styles.less, so the editor matches the rest of the UI and no webfont loads.
+.font-family {
+    font-family: @aurora-font-sans;
+}

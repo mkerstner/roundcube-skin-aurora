@@ -1,6 +1,7 @@
 {
 	"name": "Aurora",
 	"author": "Matthias Kerstner",
+	"url": "https://github.com/mkerstner/roundcube-skin-aurora",
 	"license": "Creative Commons Attribution-ShareAlike",
 	"license-url": "http://creativecommons.org/licenses/by-sa/3.0/",
 	"extends": "elastic",

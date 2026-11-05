@@ -1,0 +1,42 @@
+# Local Roundcube instance for validating the Aurora skin in the real app.
+#
+# Built from the two images the repo's own .ci/compose.yaml uses. The checkout is
+# mounted READ-ONLY and copied inside the container without the host's real
+# config/config.inc.php, so the real Roundcube database and mail account are
+# never touched (see start.sh). skins/aurora is mounted live: rebuild the CSS on
+# the host and reload the page.
+#
+#   docker compose -f skins/aurora/dev/instance/compose.yaml up -d   ->  http://localhost:8765
+#   docker compose -f skins/aurora/dev/instance/compose.yaml down    (everything is thrown away)
+#
+# Login: user  test-message-rendering@localhost  (GreenMail's preloaded test
+# mailbox, the 16 messages from tests/MessageRendering) with any password —
+# GreenMail runs with authentication disabled. Mail sent from the instance is
+# delivered back into GreenMail (use a recipient with a dotted domain, e.g.
+# someone@example.net; Roundcube's address check rejects "@localhost").
+#
+# Paths are relative to this file: ../../../.. is the repository root.
+name: aurora-dev
+
+services:
+  mailhost:
+    image: docker.io/greenmail/standalone
+    environment:
+      GREENMAIL_OPTS: '-Dgreenmail.setup.test.all -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.auth.disabled -Dgreenmail.preload.dir=/emails'
+    volumes:
+      - '../../../../tests/MessageRendering/data/greenmail:/emails:ro'
+
+  webmail:
+    image: ghcr.io/roundcube/roundcubemail-testrunner:php8.3
+    depends_on:
+      - mailhost
+    ports:
+      - '127.0.0.1:8765:8000'
+    volumes:
+      - '../../../..:/app:ro'
+      - '../..:/work/skins/aurora:ro'
+      - './config.inc.php:/dev-config/config.inc.php:ro'
+      - './start.sh:/dev-config/start.sh:ro'
+    environment:
+      AURORA_DEV_PLUGINS: ${AURORA_DEV_PLUGINS:-}
+    entrypoint: ['/bin/bash', '/dev-config/start.sh']

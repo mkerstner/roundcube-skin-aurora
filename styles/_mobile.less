@@ -30,7 +30,9 @@
 // Bottom-nav sizing tokens
 :root {
     --aurora-nav-height:   58px;
-    --aurora-nav-bg:       @color-taskmenu-background;
+    // the rail gradient over a solid fallback layer (used as a `background`
+    // shorthand: "<image> <colour>"), so print/forced-colors keep a fill
+    --aurora-nav-bg:       var(--aurora-rail-bg) @color-taskmenu-background;
     --aurora-nav-border:   fade(#fff, 8%);
     --aurora-nav-fg:       fade(#fff, 62%);
     --aurora-nav-fg-active:#fff;
@@ -44,7 +46,7 @@
 // The bar is a dark surface in light mode; in dark mode it has to lift off the
 // dark canvas instead, otherwise it disappears into the page.
 html.dark-mode {
-    --aurora-nav-bg:     lighten(@color-dark-background, 5%);
+    --aurora-nav-bg:     var(--aurora-rail-bg) @color-aurora-dark-rail-end;
     --aurora-nav-border: @color-dark-border;
 }
 
@@ -153,12 +155,15 @@ html.layout-phone {
         &.selected,
         &.selected .inner { color: var(--aurora-nav-fg-active) !important; }
 
-        &.selected:before { color: @color-main !important; }
+        // The bar is a dark ground in both themes, so the active state uses the
+        // accent's light tint (5.63 on the bar; @color-main only reaches 3.28).
+        &.selected:before { color: @color-aurora-accent-light !important; }
 
         // subtle active pill above the icon
-        &.selected { box-shadow: inset 0 3px 0 @color-main; }
+        &.selected { box-shadow: inset 0 3px 0 @color-aurora-accent-light; }
 
-        &.logout:before { color: fade(@color-error, 85%) !important; }
+        // error foreground on the dark bar (5.41; fade(@color-error) was 2.95)
+        &.logout:before { color: @color-aurora-error-light !important; }
     }
 
     // -----------------------------------------------------------------------
@@ -199,8 +204,10 @@ html.layout-phone {
             width: 58px !important;
             height: 58px !important;
             border-radius: 18px !important;   // squircle-ish, modern
-            background: @color-main !important;
-            box-shadow: var(--aurora-shadow-lg) !important;
+            // the phone's primary action takes the primary-button gradient
+            // (white icon 4.96 at the top stop) over a solid fallback
+            background: var(--aurora-btn-primary-bg) @color-btn-primary-background !important;
+            box-shadow: inset 0 1px 0 fade(#fff, 28%), var(--aurora-shadow-lg) !important;
 
             &:before { font-size: 1.6rem !important; }
         }
@@ -222,7 +229,9 @@ html.layout-phone {
     // -----------------------------------------------------------------------
     // Sheet-style content pane when a message is open
     // -----------------------------------------------------------------------
-    #layout-content.selected {
+    // (Not on .no-navbar pages such as login: they are the whole page, not a
+    // sheet, and need their overflow to scroll above an open keyboard.)
+    #layout-content.selected:not(.no-navbar) {
         border-top-left-radius: var(--aurora-radius-lg);
         border-top-right-radius: var(--aurora-radius-lg);
         overflow: hidden;

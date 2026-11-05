@@ -23,6 +23,10 @@
     --aurora-on-accent:       #fff;
     --aurora-link:            @color-link;
 
+    // Spark: graphics only on light grounds (3.74 on white) — never text.
+    --aurora-spark:           @color-aurora-spark;
+    --aurora-spark-vivid:     @color-aurora-spark-vivid;
+
     --aurora-success:         @color-success;
     --aurora-warning:         @color-warning;
     --aurora-error:           @color-error;
@@ -53,9 +57,7 @@
     --aurora-radius-pill: 999px;
 
     // ---- Type scale (px, 14px body) -------------------------------------
-    --aurora-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji";
+    --aurora-font-sans: @aurora-font-sans;
     --aurora-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
         "Liberation Mono", monospace;
 
@@ -85,14 +87,50 @@
     --aurora-shadow-md: 0 4px 12px fade(@color-shadow, 10%), 0 2px 4px fade(@color-shadow, 6%);
     --aurora-shadow-lg: 0 12px 32px fade(@color-shadow, 16%), 0 4px 8px fade(@color-shadow, 8%);
 
+    // ---- Stage 3: the four gradient surfaces ----------------------------
+    // The decoration budget is fixed: gradients appear on the task rail /
+    // phone tab bar, primary buttons, avatar placeholders and the header wash,
+    // nowhere else. Everything else gets a flat fill plus --aurora-edge.
+    --aurora-rail-bg: linear-gradient(180deg, @color-taskmenu-background 0%, @color-aurora-rail-end 100%);
+
+    // Primary button: 12% lighter at the top. White label 4.96 at the top
+    // stop, 6.29 at the bottom; hover deepens both stops (6.11 / 7.78).
+    --aurora-btn-primary-bg:
+        linear-gradient(180deg, mix(#fff, @color-btn-primary-background, 12%) 0%, @color-btn-primary-background 100%);
+    --aurora-btn-primary-bg-hover:
+        linear-gradient(180deg, mix(#fff, darken(@color-btn-primary-background, 5%), 12%) 0%, darken(@color-btn-primary-background, 5%) 100%);
+    --aurora-btn-primary-glow:       0 1px 2px fade(@color-shadow, 22%), 0 4px 12px fade(@color-main, 28%);
+    --aurora-btn-primary-glow-hover: 0 2px 4px fade(@color-shadow, 24%), 0 8px 20px fade(@color-main, 36%);
+
+    // The wash: two very faint radials behind column headers only — indigo
+    // top-left, teal top-right, never above 13% alpha. Header ink stays 11.95+.
+    --aurora-wash:
+        radial-gradient(120% 100% at 12% 0%, fade(@color-main, 13%), transparent 62%),
+        radial-gradient(90% 80% at 88% 0%, fade(@color-aurora-spark, 10%), transparent 58%);
+
+    // Edge light: a 1px top highlight that makes a raised fill read as lit.
+    // Used in box-shadow lists, so its "off" value is a no-op shadow, not none.
+    --aurora-edge: inset 0 1px 0 fade(#fff, 55%);
+
     // ---- Motion ---------------------------------------------------------
     --aurora-ease:       cubic-bezier(0.2, 0, 0, 1);
+    --aurora-ease-spring: cubic-bezier(0.2, 0.9, 0.3, 1.1);   // press states only
     --aurora-dur-fast:   100ms;
     --aurora-dur-base:   160ms;
     --aurora-dur-slow:   240ms;
     --aurora-transition: var(--aurora-dur-base) var(--aurora-ease);
 
-    // ---- Focus ring -----------------------------------------------------
+    // ---- Focus indicator ------------------------------------------------
+    // A solid outline, not a glow: it has to reach 3:1 against whatever it
+    // sits on (WCAG 1.4.11, and 2.4.13 for the focus change itself). The
+    // 35%-alpha box-shadow ring used before measured 1.64 on white and 1.46 on
+    // the dark canvas. Light: 4.93 white, 4.75 canvas, 4.33 selected row.
+    --aurora-focus:        @color-main;
+    --aurora-focus-width:  2px;
+    --aurora-focus-offset: 2px;
+
+    // Soft halo, decorative only: used around text fields, whose real
+    // indicator is Elastic's focus border (4.93 vs white).
     --aurora-ring: 0 0 0 3px fade(@color-main, 35%);
 
     // Colour of the 2px gutter bar marking the selected/focused list row.
@@ -102,21 +140,41 @@
     // ---- Density (comfortable = default) --------------------------------
     --aurora-row-height:     46px;
     --aurora-control-height: 40px;
+    --aurora-control-height-sm: 28px;   // explicit small variants (.btn-sm etc.)
     --aurora-density-pad-y:  var(--aurora-space-3);
     --aurora-density-pad-x:  var(--aurora-space-4);
 }
 
 // Dark-mode surface + elevation retuning (colours from dark.less seeds)
 html.dark-mode {
-    --aurora-surface:  #161a2b;   // violet-biased raised surface (was #141b22)
+    --aurora-surface:  @color-aurora-dark-surface;   // violet-biased raised surface (was #141b22)
+
+    // Stage 3 in dark: the rail lifts only slightly off the canvas, the wash is
+    // a little stronger to read at all, shadows stay black, edge light is faint.
+    --aurora-rail-bg: linear-gradient(180deg, @color-aurora-dark-rail-top 0%, @color-aurora-dark-rail-end 100%);
+    --aurora-wash:
+        radial-gradient(120% 100% at 12% 0%, fade(@color-main, 22%), transparent 62%),
+        radial-gradient(90% 80% at 88% 0%, fade(@color-aurora-spark-vivid, 10%), transparent 58%);
+    --aurora-btn-primary-glow:       0 1px 2px fade(#000, 40%), 0 4px 12px fade(@color-main, 30%);
+    --aurora-btn-primary-glow-hover: 0 2px 4px fade(#000, 45%), 0 8px 20px fade(@color-main, 40%);
+    --aurora-edge: inset 0 1px 0 fade(#fff, 7%);
     --aurora-canvas:   @color-dark-background;
     --aurora-ink:      @color-dark-font;
     --aurora-muted:    @color-dark-hint;
     --aurora-border:   @color-dark-border;
 
-    // The accent alone only reaches 3.02 against a selected row on the dark
-    // canvas; the lighter accent used for dark-mode links gets it to 5.04.
-    --aurora-list-indicator: #7f9cff;
+    // Accent foreground on a dark ground takes the light tint (tokens.less,
+    // "accent roles"): the accent itself only reaches 2.64 against a selected
+    // row on the dark canvas, the tint 4.53.
+    --aurora-list-indicator: @color-aurora-accent-light;
+    --aurora-link:           @color-aurora-dark-link;
+
+    // On dark the vivid step carries the spark (10.25 on the canvas).
+    --aurora-spark:          @color-aurora-spark-vivid;
+
+    // Focus outline on dark grounds: 6.63 canvas, 4.53 selected row.
+    --aurora-focus:          @color-aurora-accent-light;
+    --aurora-ring:           0 0 0 3px fade(@color-aurora-accent-light, 35%);
 
     --aurora-shadow-xs: 0 1px 2px fade(#000, 35%);
     --aurora-shadow-sm: 0 1px 2px fade(#000, 40%);
@@ -124,10 +182,25 @@ html.dark-mode {
     --aurora-shadow-lg: 0 12px 32px fade(#000, 55%);
 }
 
+// Print and forced colours (Windows High Contrast): no gradients, no edge light.
+// Every surface that uses these keeps a solid colour underneath, so switching
+// the images off leaves a plain fill rather than a hole.
+@media print, (forced-colors: active) {
+    :root,
+    html.dark-mode {
+        --aurora-rail-bg:              none;
+        --aurora-btn-primary-bg:       none;
+        --aurora-btn-primary-bg-hover: none;
+        --aurora-wash:                 none;
+        --aurora-edge:                 0 0 transparent;
+    }
+}
+
 // Compact density — opt-in via a root class (ready to wire to a preference)
 html.aurora-density-compact {
     --aurora-row-height:     36px;
     --aurora-control-height: 32px;
+    --aurora-control-height-sm: 24px;
     --aurora-density-pad-y:  var(--aurora-space-2);
     --aurora-density-pad-x:  var(--aurora-space-3);
 }

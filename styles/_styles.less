@@ -67,6 +67,27 @@ input.form-control {
 }
 
 // ---------------------------------------------------------------------------
+// Recipient fields (To / Cc / Bcc / Reply-To / Followup-To)
+// ---------------------------------------------------------------------------
+// Elastic sizes this widget to its content — it sets `height: auto` precisely to
+// reset .form-control's height — and spaces wrapped rows with a 4px `margin-top`
+// on each child plus 4px bottom padding.
+//
+// Aurora's uniform control height (the `min-height` from the density tokens,
+// which .recipient-input picks up as a .form-control) makes the box taller than
+// a single row of content. The flex default `align-items: stretch` then stretches
+// the recipient chips to fill that extra space, while the inner <input> keeps its
+// natural height and stays at the top of its stretched `li` — leaving the chip
+// text ~3.5px below the caret.
+//
+// Centring the flex items keeps chips and caret on the same line at any box
+// height. Wrapping still works: each flex line centres its own items, and the
+// 4px margins keep the row rhythm.
+.recipient-input {
+    align-items: center;
+}
+
+// ---------------------------------------------------------------------------
 // Selected list row
 // ---------------------------------------------------------------------------
 // Which message is open should read on its own, not only from the background
@@ -99,13 +120,199 @@ html:not(.touch) {
 }
 
 // ---------------------------------------------------------------------------
+// Dark-mode accent foregrounds
+// ---------------------------------------------------------------------------
+// Three of Elastic's dark rules write `color: @color-main` directly instead of
+// going through a variable, so the accent-role pins in tokens.less cannot reach
+// them. As TEXT on a dark ground they take the light tint. Selectors match
+// Elastic's exactly (equal specificity, later in the file, so these win).
+// A fourth site, the recent-folder name, has no dark rule at all and kept the
+// light-mode text colour on the dark sidebar.
+html.dark-mode {
+    .folderlist li.mailbox.recent > a {
+        color: @color-aurora-accent-light;   // was #0c33cf on the dark canvas
+    }
+
+    #taskmenu .action-buttons a {
+        color: @color-aurora-accent-light;   // rail Compose on the canvas: 3.86 -> 6.63
+
+        &:hover {
+            color: @color-aurora-accent-lighter;   // on the hover fill #2b2f4a
+        }
+    }
+
+    .tox .tox-dialog__body-nav-item--active {
+        color: @color-aurora-accent-light;   // editor dialog active tab
+    }
+
+    .ui-datepicker .ui-state-highlight,
+    .ui-datepicker.ui-widget-content .ui-state-highlight {
+        color: @color-aurora-accent-light;   // today, on the selected-row fill: 2.64 -> 4.53
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Unread indicator — the spark hue's first use
+// ---------------------------------------------------------------------------
+// The dot (and the hollow ring on a thread parent with unread children) had no
+// colour of its own: it inherited the row's ink. A graphic, so the spark is
+// allowed here in light mode (3.74 on a row, 3.29 on a selected row; 3:1 needed).
+//
+// Same guard as Elastic's own dark-mode rule for this icon: flagged rows keep
+// their all-red treatment and deleted rows stay greyed out. Targeting the
+// ::before glyph directly also beats Elastic's dark-mode colour on the span,
+// which only reaches the glyph by inheritance.
+.messagelist tr:not(.flagged):not(.deleted) td.subject span.msgicon.status {
+    &.unread:before,
+    &.unreadchildren:before {
+        color: var(--aurora-spark);
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Layered elevation instead of hard borders on floating surfaces
 // ---------------------------------------------------------------------------
+// The edge light is invisible on a white popover and is what makes the same
+// surface read as raised in dark mode.
 .popover,
 .ui-dialog,
 .ui-menu {
     border-radius: var(--aurora-radius);
-    box-shadow: var(--aurora-shadow-lg);
+    box-shadow: var(--aurora-edge), var(--aurora-shadow-lg);
+}
+
+// Elastic's dark mode sets `.popover { box-shadow: none }` (0,2,1), so the
+// dark elevation tokens never applied there. Restored; the phone side-sheet
+// popover (`html.layout-phone .popover:not(.select-menu)`, (0,3,1)) stays flat.
+html.dark-mode {
+    .popover,
+    .ui-dialog,
+    .ui-menu {
+        box-shadow: var(--aurora-edge), var(--aurora-shadow-lg);
+    }
+}
+
+// ===========================================================================
+// Stage 3 — the four gradient surfaces
+// ===========================================================================
+// The budget is fixed: task rail / phone tab bar, primary buttons, avatar
+// placeholders (images/contactpic.svg) and the header wash. Every gradient sits
+// on a solid colour that Elastic (or the rule) already paints, so print and
+// forced-colors, which switch the images off in _system.less, keep a fill.
+
+// 1. Task rail (desktop and small layouts; the phone tab bar is _mobile.less)
+@media screen and (min-width: (@screen-width-xs + 1px)) {
+    #layout-menu {
+        background-image: var(--aurora-rail-bg);
+    }
+
+    // Elastic pins the bottom group (theme, about, logout) with a solid fill so
+    // scrolled items pass beneath it; matching the gradient's END stop avoids a
+    // visible band where it sits.
+    #taskmenu .special-buttons {
+        background-color: @color-aurora-rail-end;
+    }
+
+    // Dark: Elastic makes the rail transparent (`background: unset`) and gives
+    // the bottom links a canvas-coloured fill — both re-pointed to the rail.
+    html.dark-mode #layout-menu {
+        background-image: var(--aurora-rail-bg);
+    }
+
+    html.dark-mode #layout-menu .special-buttons a:not(:focus) {
+        background: @color-aurora-dark-rail-end;
+    }
+}
+
+// 2. Primary buttons — a gradient that is 12% lighter at the top, a 1px top
+// highlight, a soft accent glow, and a spring on press. Disabled buttons keep
+// Elastic's flat fill. Elastic's :hover / :focus use the `background`
+// shorthand, which would drop the image, hence the explicit hover. Pressing
+// lets Elastic's darker flat :active fill show through: it reads as pushed in.
+.btn-primary:not(:disabled):not(.disabled) {
+    background-image: var(--aurora-btn-primary-bg);
+    box-shadow: inset 0 1px 0 fade(#fff, 28%), var(--aurora-btn-primary-glow);
+    transition: box-shadow var(--aurora-transition),
+                transform 140ms var(--aurora-ease-spring);
+
+    &:hover {
+        background-image: var(--aurora-btn-primary-bg-hover);
+        box-shadow: inset 0 1px 0 fade(#fff, 34%), var(--aurora-btn-primary-glow-hover);
+    }
+
+    &:active,
+    &.active {
+        transform: translateY(1px) scale(.985);
+    }
+}
+
+// Secondary buttons: flat, plus the edge light (they are a mid fill, so it shows).
+.btn-secondary:not(:disabled):not(.disabled) {
+    box-shadow: var(--aurora-edge), 0 1px 2px fade(@color-shadow, 8%);
+}
+
+// 3. Avatar placeholders need no CSS: Aurora ships its own images/contactpic.svg
+// (gradient fill + white glyph), and Roundcube resolves the `placeholder`
+// attribute through the skin path (abs_url(..., true) -> get_skin_file()), so
+// it replaces Elastic's grey glyph in the contact view and the message header.
+
+// 4. The wash — behind the three column headers only, never behind content.
+// Light headers are white; in dark mode Elastic makes them transparent, so the
+// wash sits over the canvas.
+#layout > div > .header {
+    background-image: var(--aurora-wash);
+}
+
+// ---------------------------------------------------------------------------
+// Status toasts: ink on tint instead of white on a solid fill
+// ---------------------------------------------------------------------------
+// Elastic paints status toasts as solid semantic fills with a white label; the
+// success one reached 2.62 (and dark-mode success / warning 4.21 / 3.89, dark
+// font on a 40% shade). Each status type now gets a tint of its colour, ink
+// text, an icon in a deeper (light) / lighter (dark) step of the colour and a
+// 3px bar of it on the leading edge. Only the four status types: the neutral
+// `notice` toast (white on ink) and `loading` are system messages that already
+// pass, and stay as Elastic draws them. The tints are palette values and live
+// in tokens.less (@color-aurora-toast-*).
+.aurora-status-toast(@bg; @icon) {
+    background-color: @bg;
+    box-shadow: inset 3px 0 0 @icon, var(--aurora-edge), var(--aurora-shadow-md);
+
+    & > i.icon:before {
+        color: @icon;
+    }
+}
+
+// Text: ink in light, the dark font in dark — set explicitly in both blocks.
+// (Relying on Elastic's dark `#messagestack div` (1,1,2) is not enough: the
+// light `.alert-info.information` selector scores (1,2,0) and would keep ink
+// on the dark tint, 1.09.)
+#messagestack {
+    .alert-info.information,
+    .alert-success,
+    .alert-warning,
+    .alert-danger {
+        color: @color-font;
+    }
+
+    .alert-info.information { .aurora-status-toast(@color-aurora-toast-info; @color-aurora-toast-info-icon); }
+    .alert-success          { .aurora-status-toast(@color-aurora-toast-success; @color-aurora-toast-success-icon); }
+    .alert-warning          { .aurora-status-toast(@color-aurora-toast-warning; @color-aurora-toast-warning-icon); }
+    .alert-danger           { .aurora-status-toast(@color-aurora-toast-error; @color-aurora-toast-error-icon); }
+}
+
+html.dark-mode #messagestack {
+    .alert-info.information,
+    .alert-success,
+    .alert-warning,
+    .alert-danger {
+        color: @color-dark-font;
+    }
+
+    .alert-info.information { .aurora-status-toast(@color-aurora-dark-toast-info; @color-aurora-dark-toast-info-icon); }
+    .alert-success          { .aurora-status-toast(@color-aurora-dark-toast-success; @color-aurora-dark-toast-success-icon); }
+    .alert-warning          { .aurora-status-toast(@color-aurora-dark-toast-warning; @color-aurora-dark-toast-warning-icon); }
+    .alert-danger           { .aurora-status-toast(@color-aurora-dark-toast-error; @color-aurora-dark-toast-error-icon); }
 }
 
 // ---------------------------------------------------------------------------
@@ -118,6 +325,17 @@ button.btn,
 .form-control,
 .custom-select {
     min-height: var(--aurora-control-height);
+}
+
+// …except where the markup explicitly asks for the small size. Inline action
+// buttons such as "Allow" in the remote-content banner are `.btn-sm`; the
+// 40px floor stretched them from ~27px and made the banner 56px tall around a
+// 21px line of text. The `.btn.btn-sm` form outranks `button.btn` above.
+.btn.btn-sm,
+.btn-group-sm > .btn,
+.form-control.form-control-sm,
+.custom-select.custom-select-sm {
+    min-height: var(--aurora-control-height-sm);
 }
 
 // ---------------------------------------------------------------------------
@@ -147,3 +365,93 @@ button.btn,
 // Mobile-first layer (bottom tab bar, touch comfort, safe-area insets)
 // ---------------------------------------------------------------------------
 @import "_mobile.less";
+
+// ---------------------------------------------------------------------------
+// Login page
+// ---------------------------------------------------------------------------
+// CSS only, so it keeps inheriting Elastic's login.html. The form becomes a
+// raised card on the canvas, under the logo. The page has no column headers, so
+// the wash sits behind the page itself: there is no message content here for it
+// to compete with.
+//
+// Elastic places both elements with `position: relative; top: 16vh / 20vh`,
+// which pushes the form off a short viewport. Auto margins centre the pair and
+// collapse to nothing when there is no spare height, so an open phone keyboard
+// never clips the top of the page the way `justify-content: center` would.
+.task-login {
+    #layout-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: var(--aurora-space-6) var(--aurora-space-4);
+        overflow-y: auto;
+        background-image: var(--aurora-wash);
+    }
+
+    #logo {
+        position: static;
+        flex: none;
+        max-width: 100%;
+        margin-top: auto;
+        margin-bottom: var(--aurora-space-6);
+    }
+}
+
+#login-form {
+    position: static;
+    flex: none;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 0 auto;
+    padding: var(--aurora-space-6);
+    background-color: var(--aurora-surface);
+    border: 1px solid var(--aurora-border);
+    border-radius: var(--aurora-radius-lg);
+    box-shadow: var(--aurora-edge), var(--aurora-shadow-md);
+
+    .formbuttons {
+        margin-bottom: 0;
+    }
+
+    // Elastic hard-codes #ccc for the rule above the single sign-on button
+    .formbuttons + .oauthlogin {
+        border-top-color: var(--aurora-border);
+    }
+}
+
+// Elastic's ui.js adds Bootstrap's .text-uppercase, which is !important;
+// sentence case is calmer at this size
+#rcmloginsubmit {
+    text-transform: none !important;
+}
+
+#login-footer {
+    margin-top: var(--aurora-space-4);
+}
+
+// ---------------------------------------------------------------------------
+// Plugin stylesheets compiled against Elastic's palette
+// ---------------------------------------------------------------------------
+// markdown_editor builds its CSS from Elastic's colors.less when Roundcube is
+// packaged, so it carries Elastic's cyan under any skin. It also loads after
+// this file, hence the `html` prefix to outrank it.
+html #markdown-editor-container {
+    .cm-editor:has(.cm-content:focus) {
+        border-color: @color-input-border-focus;
+        box-shadow: 0 0 0 .2rem @color-input-border-focus-shadow;
+    }
+
+    .codemirror-toolbar .fa-icon.clickable.active {
+        color: @color-link;
+    }
+}
+
+html.dark-mode #markdown-editor-container {
+    .cm-editor:has(.cm-content:focus) {
+        border-color: @color-dark-input-border-focus;
+    }
+
+    .codemirror-toolbar .fa-icon.clickable.active {
+        color: @color-aurora-accent-light;
+    }
+}

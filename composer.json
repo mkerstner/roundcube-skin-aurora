@@ -1,0 +1,28 @@
+{
+    "name": "mkerstner/aurora",
+    "version": "1.0.0",
+    "type": "roundcube-skin",
+    "description": "A modern, mobile-first refresh of Roundcube's Elastic skin: a persistent phone tab bar, a design-token system, an accent of its own, and WCAG 2.2 AA colours and focus indicators in light and dark.",
+    "keywords": ["roundcube", "roundcube-skin", "skin", "theme", "webmail", "dark-mode", "mobile-first"],
+    "homepage": "https://github.com/mkerstner/roundcube-skin-aurora",
+    "license": "CC-BY-SA-3.0",
+    "authors": [
+        {
+            "name": "Matthias Kerstner",
+            "role": "Lead"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/mkerstner/roundcube-skin-aurora/issues",
+        "source": "https://github.com/mkerstner/roundcube-skin-aurora"
+    },
+    "require": {
+        "php": ">=8.1",
+        "roundcube/plugin-installer": "~0.3.5"
+    },
+    "extra": {
+        "roundcube": {
+            "min-version": "1.7.0"
+        }
+    }
+}
