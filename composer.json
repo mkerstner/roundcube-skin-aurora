@@ -1,6 +1,6 @@
 {
     "name": "mkerstner/aurora",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "roundcube-skin",
     "description": "A modern, mobile-first refresh of Roundcube's Elastic skin: a persistent phone tab bar, a design-token system, an accent of its own, and WCAG 2.2 AA colours and focus indicators in light and dark.",
     "keywords": ["roundcube", "roundcube-skin", "skin", "theme", "webmail", "dark-mode", "mobile-first"],

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Phones: the bottom tab bar no longer cuts off descenders in its labels, as in
+  "Settings" and "Logout"
+
 ## 1.0.0
 
 First public release, built against Elastic from Roundcube 1.7 and tested on
