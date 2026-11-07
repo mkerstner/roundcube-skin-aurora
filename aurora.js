@@ -63,6 +63,9 @@
 
             cb.classList.add('aurora-enhanced-checkbox');
             cb.dataset.auroraEnhanced = '1';
+            // the switch is the control now: one Tab stop, one announcement
+            cb.tabIndex = -1;
+            cb.setAttribute('aria-hidden', 'true');
             cb.parentNode.insertBefore(sw, cb.nextSibling);
         } catch (e) {
             // Never let enhancement break the page — leave the native control.
@@ -74,6 +77,47 @@
 
     function enhanceAll(root) {
         (root || document).querySelectorAll(SELECTOR).forEach(enhance);
+    }
+
+    /**
+     * The header controls of the phone compose sheet (see _mobile.less). The
+     * tab bar is hidden there, and its Mail tab is what ui.js turns into the
+     * way back, so the header needs its own. Registering Send keeps it in step
+     * with Roundcube's command state, like the buttons ui.js clones.
+     */
+    function initComposeSheet() {
+        var env = rcmail.env,
+            header = document.querySelector('#layout-content > .header'),
+            source = document.querySelector('.formbuttons button.send'),
+            back, send;
+
+        if (!header || !source || env.task !== 'mail' || env.action !== 'compose' || env.extwin) {
+            return;
+        }
+
+        back = document.createElement('a');
+        back.href = '#';
+        back.className = 'button icon aurora-compose-back';
+        back.title = rcmail.gettext('back');
+        back.setAttribute('aria-label', back.title);
+        back.addEventListener('click', function (e) {
+            e.preventDefault();
+            rcmail.command('list', '', this, e);
+        });
+
+        send = document.createElement('a');
+        send.href = '#';
+        send.id = 'aurora-compose-send';
+        send.className = 'button aurora-compose-send disabled';
+        send.textContent = source.textContent.trim();
+        send.addEventListener('click', function (e) {
+            e.preventDefault();
+            rcmail.command('send', '', this, e);
+        });
+
+        header.insertBefore(back, header.firstChild);
+        header.insertBefore(send, header.querySelector('.toolbar-menu-button'));
+        rcmail.register_button('send', send.id, 'link', 'button aurora-compose-send');
     }
 
     function init() {
@@ -104,5 +148,10 @@
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
+    }
+
+    // After ui.js, which registered first: it builds the ⋮ menu button on init
+    if (window.rcmail) {
+        rcmail.addEventListener('init', initComposeSheet);
     }
 })();

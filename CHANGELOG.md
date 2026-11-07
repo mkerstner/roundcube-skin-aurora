@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.2
+
+**Fixed**
+- Phones: the tab bar covered the buttons of every dialog, so Insert or Cancel could
+  not be reached and a tap landed on a tab instead
+- Settings: every toggle appeared twice, and the hidden checkbox was an extra Tab
+  stop
+- Phones and tablets: Save was missing from the form for a new contact
+- Phones: recipient chips were 46px tall, and the caret never shared a row with one
+
+**Phones**
+- Compose is a full-screen sheet: Send and a way back in the header, no tab bar or
+  footer toolbar, and more room for the message
+- Attach is in the ⋮ menu of compose, no longer behind Options and attachments
+- Fields are 16px, the size at which iOS stops zooming in on focus
+- Larger switches and header buttons
+
 ## 1.0.1
 
 - Phones: the bottom tab bar no longer cuts off descenders in its labels, as in

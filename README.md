@@ -289,6 +289,15 @@ mobile pattern — entirely in CSS, with no changes to the inherited `ui.js`.
 The layer also adds touch-comfort sizing, safe-area insets, a refreshed
 floating compose button and elevated sticky headers.
 
+Compose is a full-screen sheet on phones: the tab bar and the footer toolbar make
+way for the message, Send and a way back sit in the header, and the fields lose
+their boxes so they read as one surface with the text. Those two header buttons
+come from `aurora.js`; wider layouts keep Elastic's controls.
+
+Fields are 16px on phones. iOS zooms the page when a smaller field takes focus,
+and Elastic prevents that with `maximum-scale=1`, which also blocks pinch zoom, so
+Aurora leaves that out of its viewport and sizes the fields instead.
+
 Because the bar is fixed, each layout column reserves its height, so Elastic's
 bottom toolbars (list pager, message actions, quota) stay visible and tappable
 rather than being buried underneath it.
@@ -332,7 +341,7 @@ Architecture
 | `styles/tokens.less` | Reseeds Elastic's LESS seed variables (the palette). |
 | `styles/_system.less` | The design-token system (CSS custom properties). |
 | `styles/_styles.less` | Component refinements. |
-| `styles/_mobile.less` | Phone layer (bottom tab bar, touch comfort). |
+| `styles/_mobile.less` | Phone layer (bottom tab bar, compose sheet, touch comfort). |
 | `styles/_a11y.less` | Focus, `forced-colors`, dark-mode contrast. |
 | `styles/_shoelace.less` | Maps `--sl-*` tokens onto Aurora's tokens. |
 | `styles/print.less`, `styles/embed.less` | Thin wrappers over Elastic's. |

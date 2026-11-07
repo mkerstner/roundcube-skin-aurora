@@ -68,7 +68,10 @@ html.layout-phone {
         display: block !important;
         transform: none !important;
         transition: none !important;
-        z-index: 1030;
+        // Under .ui-widget-overlay (100): phone dialogs fill the screen with their
+        // buttons at the bottom and no close icon, so anything above them here
+        // takes the taps meant for Insert or Cancel.
+        z-index: 99;
         border: 0 !important;
         border-radius: 0 !important;
         background: var(--aurora-nav-bg) !important;
@@ -184,10 +187,53 @@ html.layout-phone {
         padding-bottom: var(--aurora-nav-total);
     }
 
-    // Toasts are `position: absolute; bottom: 0` on phone with a z-index below
-    // the bar — lift them above it.
+    // Toasts are `position: absolute; bottom: 0` on phone — lift them above the bar.
     #messagestack {
         bottom: var(--aurora-nav-total);
+    }
+
+    .ui-dialog .ui-dialog-buttonpane {
+        padding-bottom: var(--aurora-safe-b);
+    }
+
+    // iOS zooms the page when a field under 16px takes focus. Elastic prevents
+    // that with maximum-scale=1 in its viewport meta, which also blocks pinch
+    // zoom; Aurora's meta.json leaves it out and sizes the fields instead.
+    input:not([type=checkbox]):not([type=radio]):not([type=file]),
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    // ui.js sizes these by their icon alone (25px for the ⋮ menu)
+    #layout > div > .header a.button.icon {
+        min-width: 44px;
+        text-align: center;
+    }
+
+    // Shoelace's small switch is 18px tall; this makes it the 24px of a touch target
+    sl-switch {
+        --sl-toggle-size-small: 20px;
+    }
+
+    // Elastic makes each chip a full line up to 450px, so the caret never shares
+    // a row with one. The ✕ is exempt from the 44px floor further down: it is
+    // inside a 30px chip and would stretch the chip to 46px.
+    .recipient-input {
+        li.recipient {
+            align-items: center;
+            width: auto;
+            min-height: 28px;
+        }
+
+        a.button.icon {
+            display: flex;
+            align-items: center;
+            align-self: stretch;
+            justify-content: center;
+            min-height: 0;
+            width: 28px;
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -236,6 +282,172 @@ html.layout-phone {
         border-top-right-radius: var(--aurora-radius-lg);
         overflow: hidden;
     }
+
+    // -----------------------------------------------------------------------
+    // Compose as a full-screen sheet
+    //
+    // Writing needs the height, and Logout should not sit under the thumb, so
+    // the tab bar and the footer toolbar go. The way out and Send move to the
+    // header (added by aurora.js), Save stays in the ⋮ menu, and the fields
+    // lose their boxes so the form reads as one surface with the message.
+    // -----------------------------------------------------------------------
+    .action-compose {
+        --aurora-nav-total: var(--aurora-safe-b);
+
+        #layout-menu,
+        #layout-content > .content-frame-navigation {
+            display: none !important;
+        }
+
+        // Elastic hides Attach here because Options has it, three taps away
+        #toolbar-menu li.hidden-small {
+            display: block !important;
+        }
+
+        #layout-content > .header {
+            .header-title {
+                margin: 0 !important;         // ui.js centres it with an inline margin
+                text-align: left;
+            }
+
+            a.aurora-compose-back {
+                display: block;
+            }
+
+            a.aurora-compose-send {
+                order: 98;                    // before the ⋮ menu (99)
+                display: block;
+                flex: none;
+                height: 36px;
+                margin: auto var(--aurora-space-1) auto var(--aurora-space-2) !important;
+                padding: 0 var(--aurora-space-4) !important;
+                border-radius: var(--aurora-radius-pill);
+                background: var(--aurora-btn-primary-bg) @color-btn-primary-background;
+                box-shadow: inset 0 1px 0 fade(#fff, 28%), var(--aurora-shadow-sm);
+                color: #fff;
+                font-weight: 600;
+                line-height: 36px;
+            }
+
+            // Absolute by Bootstrap's .position-absolute, it would sit on Send.
+            // At Elastic's opacity .3 the attachment icon is barely visible.
+            #composestatusbar {
+                position: static !important;
+                order: 97;
+                opacity: 1;
+            }
+        }
+
+        #compose-content {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--aurora-surface);
+
+            > form {
+                display: flex;
+                flex: 1 0 auto;
+                flex-direction: column;
+                padding: 0 0 var(--aurora-safe-b);
+            }
+        }
+
+        .compose-headers .form-group.row {
+            align-items: center;
+            min-height: 48px;
+            margin: 0;
+            padding-left: var(--aurora-space-4);
+            border-bottom: 1px solid var(--aurora-border);
+
+            // the fields have no border of their own left to show focus
+            &:focus-within {
+                border-bottom-color: var(--aurora-focus);
+                box-shadow: inset 0 -1px 0 var(--aurora-focus);
+            }
+
+            > label {
+                flex: 0 0 64px;
+                max-width: none;
+                padding: 0;
+                color: var(--aurora-muted);
+            }
+
+            > .col-10 {
+                flex: 1 1 0;
+                min-width: 0;
+                max-width: none;
+                padding: 0;
+            }
+
+            .form-control,
+            .form-control:focus,
+            .recipient-input.focus {
+                border: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            .form-control {
+                padding-left: 0;
+            }
+
+            .input-group-text {
+                justify-content: center;
+                width: 44px;
+                height: 100%;
+                border: 0;
+                background: transparent;
+            }
+        }
+
+        #composebodycontainer {
+            display: flex;
+            flex: 1 0 auto;
+            flex-direction: column;
+            margin: 0;
+
+            > textarea,
+            > .googie_edit_layer {
+                // `auto`, so that the height ui.js sets while typing keeps
+                // applying and the form scrolls, not the textarea
+                flex: 1 0 auto;
+                height: 40vh;
+                padding-right: var(--aurora-space-4);
+                padding-left: var(--aurora-space-4);
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+                background-color: transparent;
+                font-family: var(--aurora-font-sans);
+                font-size: 16px;
+                resize: none;
+            }
+
+            .editor-toolbar {
+                left: 0;
+                top: 0;
+                right: 0;
+                border-radius: 0;
+                border-bottom-color: var(--aurora-border);
+            }
+
+            .tox-tinymce {
+                flex: 1 0 auto;
+                border: 0;
+                border-radius: 0;
+            }
+        }
+    }
+}
+
+// Added by aurora.js for the phone sheet above; other layouts keep Elastic's
+// controls, and the layout can change while composing (rotating a phone).
+a.aurora-compose-back,
+a.aurora-compose-send {
+    display: none;
+}
+
+a.aurora-compose-back:before {
+    content: @fa-var-chevron-left;
 }
 
 // ---------------------------------------------------------------------------
@@ -254,5 +466,12 @@ html.layout-small {
     .menu.listing a,
     a.button.icon {
         min-height: 44px;
+    }
+
+    // ui.js hides this footer while it is empty, and its branch for add and create
+    // frames never shows it again. Those forms hide their own buttons at this size,
+    // so Save would be out of reach, as in a new contact.
+    .content-frame-navigation.hidden:has(.buttons > a) {
+        display: flex !important;
     }
 }

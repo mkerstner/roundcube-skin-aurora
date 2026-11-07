@@ -89,6 +89,7 @@ const GROUPS = {
         ['checked checkbox / switch track', 'checkbox', 'white', 'ui'],
         ['unread dot on a row', 'spark', 'white', 'ui'], ['unread dot on a selected row', 'spark', 'selRow', 'ui'],
         ['focus outline on surface', 'accent', 'white', 'ui'], ['focus outline on canvas', 'accent', 'canvas', 'ui'],
+        ['phone compose field label', 'muted', 'white', 'text'],
         ['focus outline on a selected row', 'accent', 'selRow', 'ui'], ['focus outline under the wash', 'accent', ['washIndigo', 'white'], 'ui'],
         ['focus outline on the phone dialog header', 'accentLight', 'mobileHeaderBg', 'ui'],
         ['login footer on the card', 'muted', 'white', 'text'],
@@ -126,6 +127,7 @@ const GROUPS = {
         ['focus outline on canvas', 'accentLight', 'dcanvas', 'ui'], ['focus outline on a selected row', 'accentLight', 'dsel', 'ui'],
         ['focus outline under the wash', 'accentLight', ['dwashIndigo', 'dcanvas'], 'ui'],
         ['login footer on the card', 'dhint', 'dsurface', 'text'],
+        ['phone compose field label', 'dhint', 'dsurface', 'text'], ['phone compose focus line', 'accentLight', 'dsurface', 'ui'],
         ['scrollbar thumb vs track', 'dthumb', 'dtrack', 'ui'], ['scrollbar thumb vs canvas', 'dthumb', 'dcanvas', 'ui'],
     ],
     'Status toasts (dark)': [

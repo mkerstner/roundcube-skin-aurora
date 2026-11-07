@@ -74,4 +74,9 @@ html.dark-mode {
     clip: rect(0, 0, 0, 0) !important;
     white-space: nowrap !important;
     border: 0 !important;
+
+    // ui.js has already made it a Bootstrap switch, which is drawn by this label
+    & ~ .custom-control-label {
+        display: none;
+    }
 }
