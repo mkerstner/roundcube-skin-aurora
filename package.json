@@ -2,7 +2,7 @@
     "name": "roundcube-skin-aurora",
     "private": true,
     "description": "Build tooling for the Aurora skin. Roundcube users do not need this: the compiled files are part of the release.",
-    "license": "CC-BY-SA-3.0",
+    "license": "CC-BY-SA-4.0",
     "scripts": {
         "build": "npm run build:css && npm run build:js",
         "build:css": "lessc --clean-css=\"--s1 --advanced\" styles/styles.less styles/styles.min.css && lessc --clean-css=\"--s1 --advanced\" styles/print.less styles/print.min.css && lessc --clean-css=\"--s1 --advanced\" styles/embed.less styles/embed.min.css",

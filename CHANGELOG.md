@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3
+
+- Licence: CC BY-SA 4.0 instead of 3.0, which Elastic's CC BY-SA 3.0 allows for
+  adaptations. LICENSE holds the full legal text, so GitHub recognises it.
+  Releases up to 1.0.2 stay under CC BY-SA 3.0.
+- README: the palette section describes the palette as it is, without the
+  history of its staged rollout
+
 ## 1.0.2
 
 **Fixed**

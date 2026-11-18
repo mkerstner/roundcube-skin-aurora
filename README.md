@@ -177,14 +177,12 @@ Roundcube core file.
 Palette
 -------
 
-The palette was rolled out in three stages, so each could be judged against a
-finished ground rather than a moving one: neutrals first, then the accent, and
-the decorative surfaces last.
+Neutrals sit on a violet bias, the accent is an indigo-violet of its own, a teal
+second hue marks unread messages, and gradients are limited to four surfaces.
 
-### Stage 1 — neutrals and elevation ✅ shipped
+### Neutrals and elevation
 
-Neutrals moved off the blue-grey axis onto a violet bias, and elevation was
-reseeded onto its own hue.
+Neutrals are off Elastic's blue-grey axis, and elevation has a hue of its own.
 
 | Role | Seed | Value |
 |------|------|-------|
@@ -198,18 +196,14 @@ reseeded onto its own hue.
 | Dark ink | `@color-dark-font` | `#d2d1e4` |
 
 Elastic derives much of its palette from a few seeds, so `@color-black` alone
-also moves body text, column dividers and list separators. Dark mode was
-reseeded in the same pass: Elastic's dark neutrals are green-teal throughout
-(`#c5d1d3`, `#4d6066`, `#2c373a`), which left earlier versions of Aurora with
-green-tinted text on a neutral ground.
+also moves body text, column dividers and list separators. Dark mode is reseeded
+too: Elastic's dark neutrals are green-teal throughout (`#c5d1d3`, `#4d6066`,
+`#2c373a`), which would leave green-tinted text on Aurora's violet ground.
 
 Light and sidebar surfaces stay pure white; only the content pane is tinted, so
 the two read as distinct planes.
 
-### Stage 2 — accent and a second hue ✅ shipped
-
-The accent moved off Open Color indigo onto an indigo-violet of its own, and a
-second hue arrived.
+### Accent and spark
 
 | Role | Seed | Value |
 |------|------|-------|
@@ -223,20 +217,20 @@ second hue arrived.
 **One accent value cannot serve every context.** Elastic uses `@color-main`
 for fills, for text on white and for text on dark grounds alike, which is why
 white-on-accent (menu hover, unread badges), the task rail's Compose label and
-dark-mode selected rows all fell short of AA. Stage 2 re-points each Elastic
-site to the variant made for its ground. It also makes dark-mode links work:
-Elastic never replaces its light link colour in dark mode, so plain links sat
-at 3.37:1 on the dark canvas; they are now 8.36:1.
+dark-mode selected rows all fell short of AA. Aurora re-points each Elastic site
+to the variant made for its ground. It also makes dark-mode links work: Elastic
+never replaces its light link colour in dark mode, so plain links sat at 3.37:1
+on the dark canvas; Aurora's reach 8.36:1.
 
 **Spark is graphics-only in light mode** — see the accessibility principle
-above. In this stage it marks unread messages; the avatar gradients and the
-header wash arrive in stage 3. (Core Roundcube has no tag UI for it to colour.)
+above. It marks unread messages and is the teal half of the wash. (Core
+Roundcube has no tag UI for it to colour.)
 
-All 46 accent and spark pairs pass AA. The tightest are the dark-mode selected
-row (4.53:1), a checked switch track against the dark canvas (3.04:1, against a
-3:1 target) and the unread dot on a selected row (3.29:1).
+The tightest accent and spark pairs are the dark-mode selected row (4.53:1), a
+checked switch track against the dark canvas (3.04:1, against a 3:1 target) and
+the unread dot on a selected row (3.29:1).
 
-### Stage 3 — the four gradient surfaces ✅ shipped
+### Gradient surfaces
 
 Gradients appear on exactly four surfaces, and nowhere else:
 
@@ -253,18 +247,18 @@ regain their elevation in dark mode, where Elastic had switched it off. Print an
 forced-colors (Windows High Contrast) switch every gradient and the edge light
 off; each surface keeps a solid fill underneath.
 
-**Status toasts** are now ink on a tint of their colour, with a coloured
-leading bar and an icon in a deeper (light) or lighter (dark) step of it.
-Elastic's white-on-solid toasts failed at 2.62:1 for success in light mode, and
-its dark success and warning toasts at 4.21 and 3.89; all four types now reach
-7.80–12.43:1. The neutral `notice` and `loading` toasts already passed and
-stay as Elastic draws them.
+**Status toasts** are ink on a tint of their colour, with a coloured leading bar
+and an icon in a deeper (light) or lighter (dark) step of it. Elastic's
+white-on-solid toasts failed at 2.62:1 for success in light mode, and its dark
+success and warning toasts at 4.21 and 3.89; all four of Aurora's types reach
+7.80–12.43:1. The neutral `notice` and `loading` toasts already passed and stay
+as Elastic draws them.
 
-**Fixed in the same pass:** the task rail's red Logout label was 3.41:1 on the
-rail (2.67 on hover) and now uses a light red, `#ff7b72` (5.11–8.33:1).
-Secondary buttons had a white label at 3.66:1 and now use the muted ink
-(5.39:1). The dark popover border was the last green-grey neutral
-(`#8b9fa7`) and is now on the violet axis at the same luminance.
+**Other contrast fixes:** Elastic's red Logout label on the task rail is 3.41:1
+(2.67 on hover); Aurora uses a light red, `#ff7b72` (5.11–8.33:1). Elastic's
+secondary buttons have a white label at 3.66:1; Aurora's use the muted ink
+(5.39:1). The dark popover border, Elastic's last green-grey neutral
+(`#8b9fa7`), is on the violet axis at the same luminance.
 
 Design tokens
 -------------
@@ -327,7 +321,7 @@ Aurora targets **WCAG 2.2 AA**, verified numerically rather than by eye.
 Several of Elastic's own colours fell short of AA and are corrected rather than
 inherited: white on the accent, the rail's Compose and Logout labels, dark-mode
 selected rows and links, secondary buttons, and the status toasts in both
-themes. See the palette stages above for the figures.
+themes. See [Palette](#palette) for the figures.
 
 Architecture
 ------------
@@ -448,15 +442,19 @@ Non-goals
 Credits and licence
 -------------------
 
-Aurora is maintained by Matthias Kerstner.
+Aurora is maintained by Matthias Kerstner. Copyright (c) 2026 Matthias Kerstner.
 
 It is based on the **Elastic** skin by Aleksander Machniak and the Roundcube Dev
-Team, and reuses its stylesheets, templates, fonts and images. Elastic's licence
-requires these credits to stay in this file.
+Team (copyright (c) The Roundcube Dev Team), licensed under CC BY-SA 3.0, and
+reuses its stylesheets, templates, fonts and images with changes. Elastic's
+licence requires these credits to stay in this file.
 
-Like Elastic, Aurora is licensed under the Creative Commons Attribution-ShareAlike
-3.0 License — see [LICENSE](LICENSE) and
-<http://creativecommons.org/licenses/by-sa/3.0/>.
+Aurora is licensed under the Creative Commons Attribution-ShareAlike 4.0
+International License — see [LICENSE](LICENSE) and
+<https://creativecommons.org/licenses/by-sa/4.0/>. CC BY-SA 3.0 allows an
+adaptation to be shared under a later version of the same licence, which is how
+Elastic's terms carry over. Releases up to 1.0.2 were under CC BY-SA 3.0.
 
-Included under their own licences: the FontAwesome 5 fonts and the Shoelace
-components (MIT). Bootstrap is not included; it comes from your Elastic skin.
+Included under their own licences: the FontAwesome 5 fonts (SIL Open Font
+License 1.1) and the Shoelace components (MIT). Bootstrap is not included; it
+comes from your Elastic skin.
